@@ -1,0 +1,48 @@
+name: CI/CD Pipeline for Loan Calculator (Docker)
+
+# Trigger this workflow when pushing changes to the main branch or the 'steve' branch
+on:
+  push:
+    branches:
+      - main
+      - steve
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker
+      - name: Set up Docker
+        run: |
+          docker --version
+          docker-compose --version
+
+      # Step 3: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t loan-calculator .
+
+      # Step 4: Log in to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 5: Push Docker image to DockerHub (using your username 'otizaaa')
+      - name: Push Docker image to DockerHub
+        run: |
+          docker tag loan-calculator otizaaa/loan-calculator:latest
+          docker push otizaaa/loan-calculator:latest
+
+      # Step 6: Deploy the Docker container to Render
+      - name: Deploy to Render
+        run: |
+          curl -X POST https://api.render.com/deploy/sync \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -d '{"serviceId": "your-render-service-id"}'
