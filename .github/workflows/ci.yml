@@ -45,3 +45,13 @@ jobs:
           curl -X POST https://api.render.com/deploy/sync \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -d '{"serviceId": "your-render-service-id"}'
+
+      # Step 7: Run Docker container with environment variables (for DB credentials)
+      - name: Run Docker container
+        run: |
+          docker run -d \
+            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            --name loan-calculator-container \
+            otizaaa/loan-calculator:latest
