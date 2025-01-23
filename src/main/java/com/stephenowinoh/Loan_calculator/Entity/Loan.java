@@ -54,6 +54,94 @@ public class Loan {
         @Column(nullable = false)
         private LocalDateTime dueDate; // Explicit due date if separate from endDate
 
+        public Long getId() {
+                return id;
+        }
+
+        public void setId(Long id) {
+                this.id = id;
+        }
+
+        public BigDecimal getAmount() {
+                return amount;
+        }
+
+        public void setAmount(BigDecimal amount) {
+                this.amount = amount;
+        }
+
+        public BigDecimal getTotalInterest() {
+                return totalInterest;
+        }
+
+        public void setTotalInterest(BigDecimal totalInterest) {
+                this.totalInterest = totalInterest;
+        }
+
+        public BigDecimal getTotalRepayment() {
+                return totalRepayment;
+        }
+
+        public void setTotalRepayment(BigDecimal totalRepayment) {
+                this.totalRepayment = totalRepayment;
+        }
+
+        public RepaymentFrequency getRepaymentFrequency() {
+                return repaymentFrequency;
+        }
+
+        public void setRepaymentFrequency(RepaymentFrequency repaymentFrequency) {
+                this.repaymentFrequency = repaymentFrequency;
+        }
+
+        public LocalDateTime getCreatedAt() {
+                return createdAt;
+        }
+
+        public void setCreatedAt(LocalDateTime createdAt) {
+                this.createdAt = createdAt;
+        }
+
+        public LocalDateTime getStartDate() {
+                return startDate;
+        }
+
+        public void setStartDate(LocalDateTime startDate) {
+                this.startDate = startDate;
+        }
+
+        public LocalDateTime getEndDate() {
+                return endDate;
+        }
+
+        public void setEndDate(LocalDateTime endDate) {
+                this.endDate = endDate;
+        }
+
+        public Customer getCustomer() {
+                return customer;
+        }
+
+        public void setCustomer(Customer customer) {
+                this.customer = customer;
+        }
+
+        public RepaymentPlan getRepaymentPlan() {
+                return repaymentPlan;
+        }
+
+        public void setRepaymentPlan(RepaymentPlan repaymentPlan) {
+                this.repaymentPlan = repaymentPlan;
+        }
+
+        public LocalDateTime getDueDate() {
+                return dueDate;
+        }
+
+        public void setDueDate(LocalDateTime dueDate) {
+                this.dueDate = dueDate;
+        }
+
         // Remaining time in seconds
         public long getRemainingTimeInSeconds() {
                 return ChronoUnit.SECONDS.between(LocalDateTime.now(), this.dueDate); // or this.endDate

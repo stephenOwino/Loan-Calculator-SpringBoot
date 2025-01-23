@@ -40,4 +40,51 @@ public class RepaymentPlan {
         private List<LocalDate> repaymentDates; // List of repayment dates
 
 
+        public Long getId() {
+                return id;
+        }
+
+        public void setId(Long id) {
+                this.id = id;
+        }
+
+        public Loan getLoan() {
+                return loan;
+        }
+
+        public void setLoan(Loan loan) {
+                this.loan = loan;
+        }
+
+        public LocalDate getStartDate() {
+                return startDate;
+        }
+
+        public void setStartDate(LocalDate startDate) {
+                this.startDate = startDate;
+        }
+
+        public LocalDate getEndDate() {
+                return endDate;
+        }
+
+        public void setEndDate(LocalDate endDate) {
+                this.endDate = endDate;
+        }
+
+        public BigDecimal getInstallmentAmount() {
+                return installmentAmount;
+        }
+
+        public void setInstallmentAmount(BigDecimal installmentAmount) {
+                this.installmentAmount = installmentAmount;
+        }
+
+        public List<LocalDate> getRepaymentDates() {
+                return repaymentDates;
+        }
+
+        public void setRepaymentDates(List<LocalDate> repaymentDates) {
+                this.repaymentDates = repaymentDates;
+        }
 }

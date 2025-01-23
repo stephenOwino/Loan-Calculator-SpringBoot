@@ -1,5 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Mapper;
 
+import com.stephenowinoh.Loan_calculator.Dto.RepaymentPlanDto;
+import com.stephenowinoh.Loan_calculator.Entity.RepaymentPlan;
 
 
 import com.stephenowinoh.Loan_calculator.Dto.RepaymentPlanDto;
@@ -17,4 +19,3 @@ public class RepaymentPlanMapper {
                 );
         }
 }
-
