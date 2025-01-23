@@ -1,12 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
 public class JwtPayloadDTO {
+        private Long id;  // Add ID field
         private String username;
         private String firstName;
         private String lastName;
@@ -15,11 +10,20 @@ public class JwtPayloadDTO {
         public JwtPayloadDTO() {
         }
 
-        public JwtPayloadDTO(String username, String firstName, String lastName, String token) {
+        public JwtPayloadDTO(Long id, String username, String firstName, String lastName, String token) {
+                this.id = id;
                 this.username = username;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.token = token;
+        }
+
+        public Long getId() {
+                return id;
+        }
+
+        public void setId(Long id) {
+                this.id = id;
         }
 
         public String getUsername() {

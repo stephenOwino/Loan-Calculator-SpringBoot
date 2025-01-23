@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +31,19 @@ public class JWTService {
                         throw new RuntimeException(e);
                 }
         }
-        public String generateToken(JwtPayloadDTO customer) {
+        public String generateToken(JwtPayloadDTO jwtPayloadDTO) {
                 Map<String, Object> claims = new HashMap<>();
-                // You can add custom claims to your token here
-                claims.put("firstName", customer.getFirstName());
-                claims.put("lastName", customer.getLastName());
+                claims.put("userId", jwtPayloadDTO); // You can extract the user details as needed.
 
                 return Jwts.builder()
                         .setClaims(claims)
-                        .setSubject(customer.getUsername())  // Using username from JwtPayloadDTO
+                        .setSubject(jwtPayloadDTO.getUsername()) // Use the username from JwtPayloadDTO
                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                        .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))  // 30 minutes expiration
-                        .signWith(getKey())  // Signing with the secret key
+                        .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))  // 1 hour expiration
+                        .signWith(getKey())
                         .compact();
         }
+
 
         private SecretKey getKey() {
                 byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -79,6 +79,5 @@ public class JWTService {
                 return extractClaim(token, Claims::getExpiration);
         }
 
-
-
 }
+

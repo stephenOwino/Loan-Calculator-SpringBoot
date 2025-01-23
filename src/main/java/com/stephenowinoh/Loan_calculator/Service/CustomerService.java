@@ -3,10 +3,11 @@ package com.stephenowinoh.Loan_calculator.Service;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,7 @@ public class CustomerService implements ICustomerService {
                         customer.setUsername(customerDto.getUsername());
                         customer.setEmail(customerDto.getEmail());
 
-                        if (customerDto.getPassword() != null && !customerDto.getPassword().isEmpty()) {
+                        if (customerDto.getPassword() != null && ! customerDto.getPassword().isEmpty()) {
                                 customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password
                         }
 
@@ -88,8 +89,22 @@ public class CustomerService implements ICustomerService {
                         .collect(Collectors.toList());
         }
 
+
         @Override
-        public JwtPayloadDTO loadUserByUsername(String username) {
-                return null;
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                Optional<Customer> customerOptional = customerRepository.findByUsername(username);
+
+                if (customerOptional.isPresent()) {
+                        Customer customer = customerOptional.get();
+
+                        // Return a UserDetails object with customer data (password is already encoded)
+                        return org.springframework.security.core.userdetails.User.builder()
+                                .username(customer.getUsername())
+                                .password(customer.getPassword())  // Already encoded
+                                .authorities("USER")  // You can define roles/authorities as needed
+                                .build();
+                } else {
+                        throw new UsernameNotFoundException("User not found with username: " + username);
+                }
         }
 }

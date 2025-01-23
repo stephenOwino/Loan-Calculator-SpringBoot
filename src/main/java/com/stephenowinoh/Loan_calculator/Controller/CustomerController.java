@@ -97,7 +97,7 @@ public class CustomerController {
                         );
 
                         if (authentication.isAuthenticated()) {
-                                JwtPayloadDTO customer = customerService.loadUserByUsername(username);
+                                JwtPayloadDTO customer = (JwtPayloadDTO) customerService.loadUserByUsername(username);
                                 String jwtToken = jwtService.generateToken(customer);
                                 return ResponseEntity.ok(jwtToken); // Return the JWT token
                         } else {
