@@ -1,6 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,4 +38,6 @@ public class RepaymentPlan {
         @CollectionTable(name = "repayment_schedule", joinColumns = @JoinColumn(name = "repayment_plan_id"))
         @Column(name = "repayment_date")
         private List<LocalDate> repaymentDates; // List of repayment dates
+
+
 }
