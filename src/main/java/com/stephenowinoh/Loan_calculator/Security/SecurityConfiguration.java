@@ -18,23 +18,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-// Ensure the correct import
-
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration implements WebMvcConfigurer {
 
         @Autowired
-        private CustomerDetailService customerDetailService; // Inject the custom user details service
+        private CustomerDetailService customerDetailService;
 
         @Autowired
-        private JwtAuthenticationFilter jwtAuthenticationFilter; // JWT filter for stateless authentication
+        private JwtAuthenticationFilter jwtAuthenticationFilter;
 
         // PasswordEncoder Bean
         @Bean
         public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder(12); // Strong encryption with BCrypt
+                return new BCryptPasswordEncoder(12);
         }
 
         // AuthenticationProvider Bean
@@ -42,14 +39,14 @@ public class SecurityConfiguration implements WebMvcConfigurer {
         public AuthenticationProvider authenticationProvider() {
                 DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
                 provider.setPasswordEncoder(passwordEncoder());
-                provider.setUserDetailsService(customerDetailService); // Set the CustomUserDetailsService
+                provider.setUserDetailsService(customerDetailService);
                 return provider;
         }
 
         // AuthenticationManager Bean
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-                return config.getAuthenticationManager(); // Returns the AuthenticationManager using the new AuthenticationConfiguration
+                return config.getAuthenticationManager();
         }
 
         // SecurityFilterChain Bean
@@ -69,13 +66,11 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                         .build();
         }
 
-
-
         // CORS Configuration for allowed origins
         @Override
         public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://your-frontend-url.com") // Frontend URL
+                        .allowedOrigins("https://loan-calculator-4wyx.onrender.com") // Frontend URL
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true); // Allow credentials such as cookies

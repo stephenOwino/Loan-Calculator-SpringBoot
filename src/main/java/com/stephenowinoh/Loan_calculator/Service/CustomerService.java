@@ -7,7 +7,7 @@ import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class CustomerService implements ICustomerService {
 
         private final CustomerRepository customerRepository;
-        private final BCryptPasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
 
         @Autowired
-        public CustomerService(CustomerRepository customerRepository, BCryptPasswordEncoder passwordEncoder) {
+        public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
                 this.customerRepository = customerRepository;
-                this.passwordEncoder = passwordEncoder;
+                this.passwordEncoder = passwordEncoder;  // Use the injected PasswordEncoder
         }
 
         @Override
@@ -42,7 +42,7 @@ public class CustomerService implements ICustomerService {
 
                 // Create and save the customer
                 Customer customer = CustomerMapper.toEntity(customerDto);
-                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password
+                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password using injected PasswordEncoder
                 Customer savedCustomer = customerRepository.save(customer);
 
                 // Return the saved customer as a response DTO
@@ -69,7 +69,7 @@ public class CustomerService implements ICustomerService {
 
                         // Encrypt the password if it is provided in the DTO
                         if (customerDto.getPassword() != null && !customerDto.getPassword().isEmpty()) {
-                                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
+                                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password using injected PasswordEncoder
                         }
 
                         // Save the updated customer
