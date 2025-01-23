@@ -9,6 +9,7 @@ import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 import com.stephenowinoh.Loan_calculator.Jwt.JwtService;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Service.ICustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,7 +98,7 @@ public class CustomerController {
 
                         if (authentication.isAuthenticated()) {
                                 JwtPayloadDTO customer = customerService.loadUserByUsername(username);
-                                String jwtPayloadDTO = jwtService.generateToken(customer);  // Get JWT DTO
+                                String jwtPayloadDTO = String.valueOf(jwtService.generateToken(customer));  // Get JWT DTO
                                 return ResponseEntity.ok(jwtPayloadDTO);  // Return the DTO
                         } else {
                                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
