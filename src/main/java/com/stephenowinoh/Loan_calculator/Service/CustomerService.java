@@ -3,6 +3,7 @@ package com.stephenowinoh.Loan_calculator.Service;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,5 +94,10 @@ public class CustomerService implements ICustomerService {
                 return customers.stream()
                         .map(CustomerMapper::toDto)
                         .collect(Collectors.toList());
+        }
+
+        @Override
+        public JwtPayloadDTO loadUserByUsername(String username) {
+                return null;
         }
 }

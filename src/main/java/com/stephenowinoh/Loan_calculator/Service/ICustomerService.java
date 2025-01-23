@@ -3,6 +3,7 @@ package com.stephenowinoh.Loan_calculator.Service;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +27,6 @@ public interface ICustomerService {
 
         // Method to list all customers
         List<CustomerResponseDto> getAllCustomers();
+
+        JwtPayloadDTO loadUserByUsername(String username);
 }
