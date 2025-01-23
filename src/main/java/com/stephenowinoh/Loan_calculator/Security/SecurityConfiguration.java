@@ -55,16 +55,17 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 return http
                         .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/users/register/**", "/api/users/login", "/api/users/logout") // Public homepage, registration, and login endpoints
-                                .permitAll()
+                                .requestMatchers("/api/customers/register/**", "/api/users/login") // Exclude register and login
+                                .permitAll()  // Allow public access to register and login
                                 .requestMatchers("/api/users/profile") // Profile endpoint: only accessible by authenticated users
-                                .authenticated()
+                                .authenticated()  // Require authentication for /profile
                                 .anyRequest()
-                                .authenticated()) // Secure all other endpoints
+                                .authenticated())  // Secure all other endpoints
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions (JWT-based)
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
+                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before UsernamePasswordAuthenticationFilter
                         .build();
         }
+
 
         // CORS Configuration for allowed origins
         @Override
