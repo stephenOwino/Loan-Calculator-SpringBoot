@@ -20,7 +20,7 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-        public String secretKey = "ua78WjgVbgWqqifUVSEMTOSI20sLRci9";
+        public String secretKey = "";
 
 
 
