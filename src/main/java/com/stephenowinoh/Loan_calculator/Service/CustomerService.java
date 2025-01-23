@@ -23,12 +23,11 @@ public class CustomerService implements ICustomerService {
         @Autowired
         public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
                 this.customerRepository = customerRepository;
-                this.passwordEncoder = passwordEncoder;  // Use the injected PasswordEncoder
+                this.passwordEncoder = passwordEncoder;
         }
 
         @Override
         public Optional<Customer> findByUsername(String username) {
-                // Find customer by username
                 return customerRepository.findByUsername(username);
         }
 
@@ -42,23 +41,21 @@ public class CustomerService implements ICustomerService {
 
                 // Create and save the customer
                 Customer customer = CustomerMapper.toEntity(customerDto);
-                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password using injected PasswordEncoder
+                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
                 Customer savedCustomer = customerRepository.save(customer);
 
-                // Return the saved customer as a response DTO
+                // Map saved Customer entity to Response DTO
                 return CustomerMapper.toDto(savedCustomer);
         }
 
         @Override
         public Optional<CustomerResponseDto> getCustomerDetails(Long id) {
-                // Find customer by ID and return as DTO
                 Optional<Customer> customer = customerRepository.findById(id);
                 return customer.map(CustomerMapper::toDto);
         }
 
         @Override
         public Optional<CustomerResponseDto> updateCustomer(Long id, CustomerDto customerDto) {
-                // Find the existing customer by ID
                 Optional<Customer> existingCustomer = customerRepository.findById(id);
                 if (existingCustomer.isPresent()) {
                         Customer customer = existingCustomer.get();
@@ -67,29 +64,24 @@ public class CustomerService implements ICustomerService {
                         customer.setUsername(customerDto.getUsername());
                         customer.setEmail(customerDto.getEmail());
 
-                        // Encrypt the password if it is provided in the DTO
                         if (customerDto.getPassword() != null && !customerDto.getPassword().isEmpty()) {
-                                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password using injected PasswordEncoder
+                                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password
                         }
 
-                        // Save the updated customer
                         Customer updatedCustomer = customerRepository.save(customer);
-
-                        // Return the updated customer as DTO
+                        // Return updated customer as DTO
                         return Optional.of(CustomerMapper.toDto(updatedCustomer));
                 }
-                return Optional.empty();
+                return Optional.empty();  // REMAIN THE SAME
         }
 
         @Override
         public void deleteCustomer(Long id) {
-                // Delete customer by ID
                 customerRepository.deleteById(id);
         }
 
         @Override
         public List<CustomerResponseDto> getAllCustomers() {
-                // Get all customers and map to response DTOs
                 List<Customer> customers = customerRepository.findAll();
                 return customers.stream()
                         .map(CustomerMapper::toDto)

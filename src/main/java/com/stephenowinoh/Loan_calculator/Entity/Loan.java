@@ -1,6 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,9 @@ public class Loan {
         private Long id;
 
         @Column(nullable = false)
+        @DecimalMin(value = "0.0", inclusive = false)
         private BigDecimal amount;
+
 
         @Column(nullable = false)
         private BigDecimal totalInterest;

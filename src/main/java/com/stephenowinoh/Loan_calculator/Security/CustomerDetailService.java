@@ -29,7 +29,7 @@ public class CustomerDetailService implements UserDetailsService {
                         // Extract customer entity and convert to DTO
                         CustomerDto customerDto = mapToCustomerDto(customerOptional.get());
 
-                        // Return the UserDetails object (no roles needed for now)
+                        // Return the UserDetails object with DTO data
                         return User.builder()
                                 .username(customerDto.getUsername())
                                 .password(customerDto.getPassword())
@@ -39,7 +39,6 @@ public class CustomerDetailService implements UserDetailsService {
                         throw new UsernameNotFoundException("User not found with username: " + username);
                 }
         }
-
 
         // Helper method to map Customer entity to CustomerDto
         private CustomerDto mapToCustomerDto(Customer customer) {
