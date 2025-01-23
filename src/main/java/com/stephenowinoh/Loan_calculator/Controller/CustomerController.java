@@ -100,6 +100,7 @@ public class CustomerController {
                 return customerResponseDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         }
 
+
         // Endpoint to update customer details
         @PutMapping("/{id}")
         public ResponseEntity<CustomerResponseDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
