@@ -55,7 +55,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 return http
                         .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/customers/register/**", "/api/users/login") // Exclude register and login
+                                .requestMatchers("/api/customers/register/**", "/api/customers/authenticate") // Exclude register and login
                                 .permitAll()  // Allow public access to register and login
                                 .requestMatchers("/api/users/profile") // Profile endpoint: only accessible by authenticated users
                                 .authenticated()  // Require authentication for /profile
