@@ -20,7 +20,7 @@ public class CustomerDetailService implements UserDetailsService {
         private CustomerRepository repository;
 
         @Override
-        public static UserDetails loadUserByUsername(String username) {
+        public UserDetails loadUserByUsername(String username) {
                 // Fetch the customer from the repository
                 Optional<Customer> customerOptional = repository.findByUsername(username);
 
@@ -39,6 +39,7 @@ public class CustomerDetailService implements UserDetailsService {
                         throw new UsernameNotFoundException("User not found with username: " + username);
                 }
         }
+
 
         // Helper method to map Customer entity to CustomerDto
         private CustomerDto mapToCustomerDto(Customer customer) {
