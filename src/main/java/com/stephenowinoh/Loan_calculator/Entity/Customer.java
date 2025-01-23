@@ -1,7 +1,7 @@
+
 package com.stephenowinoh.Loan_calculator.Entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,9 @@ public class Customer {
 
         @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Loan> loans = new ArrayList<>();
+
+        // Getters and setters...
+
 
         public Customer() {
         }
@@ -113,5 +116,4 @@ public class Customer {
                 this.loans = loans;
         }
 }
-
 

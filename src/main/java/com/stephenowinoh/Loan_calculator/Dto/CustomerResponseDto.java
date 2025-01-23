@@ -1,6 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
 
+
 public class CustomerResponseDto {
 
         private Long id;
@@ -9,6 +10,9 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
+
+        // Constructor, Getters, and Setters...
+
 
         public CustomerResponseDto() {
         }
@@ -21,7 +25,6 @@ public class CustomerResponseDto {
                 this.email = email;
                 this.createdAt = createdAt;
         }
-
 
         public Long getId() {
                 return id;

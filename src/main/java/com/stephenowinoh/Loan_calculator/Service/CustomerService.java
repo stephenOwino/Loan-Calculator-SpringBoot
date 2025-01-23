@@ -3,10 +3,11 @@ package com.stephenowinoh.Loan_calculator.Service;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,18 +34,15 @@ public class CustomerService implements ICustomerService {
 
         @Override
         public CustomerResponseDto registerCustomer(CustomerDto customerDto) {
-                // Check if the username already exists
                 Optional<Customer> existingCustomer = customerRepository.findByUsername(customerDto.getUsername());
                 if (existingCustomer.isPresent()) {
                         throw new RuntimeException("Username is already taken!");
                 }
 
-                // Create and save the customer
                 Customer customer = CustomerMapper.toEntity(customerDto);
-                customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
+                customer.setPassword(passwordEncoder.encode(customerDto.getPassword())); // Encrypt password
                 Customer savedCustomer = customerRepository.save(customer);
 
-                // Map saved Customer entity to Response DTO
                 return CustomerMapper.toDto(savedCustomer);
         }
 
@@ -69,10 +67,9 @@ public class CustomerService implements ICustomerService {
                         }
 
                         Customer updatedCustomer = customerRepository.save(customer);
-                        // Return updated customer as DTO
                         return Optional.of(CustomerMapper.toDto(updatedCustomer));
                 }
-                return Optional.empty();  // REMAIN THE SAME
+                return Optional.empty();
         }
 
         @Override
@@ -89,7 +86,17 @@ public class CustomerService implements ICustomerService {
         }
 
         @Override
-        public JwtPayloadDTO loadUserByUsername(String username) {
-                return null;
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                Optional<Customer> customerOptional = customerRepository.findByUsername(username);
+                if (customerOptional.isPresent()) {
+                        Customer customer = customerOptional.get();
+                        return org.springframework.security.core.userdetails.User.builder()
+                                .username(customer.getUsername())
+                                .password(customer.getPassword())
+                                .authorities("USER")
+                                .build();
+                } else {
+                        throw new UsernameNotFoundException("User not found with username: " + username);
+                }
         }
 }

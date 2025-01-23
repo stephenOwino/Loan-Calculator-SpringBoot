@@ -1,26 +1,20 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public class CustomerDto {
 
-@Getter
-@Setter
+        private String firstName;
+        private String lastName;
+        private String username;
+        private String email;
+        private String password;
+        private String confirmPassword;
 
+        // Constructors, getters, and setters...
 
-public class CustomerDto{
-                private String firstName;
-                private String lastName;
-                private String username;
-                private String email;
-                private String password;
-                private String confirmPassword;
 
         public CustomerDto() {
         }
-
 
         public CustomerDto(String firstName, String lastName, String username, String email, String password, String confirmPassword) {
                 this.firstName = firstName;

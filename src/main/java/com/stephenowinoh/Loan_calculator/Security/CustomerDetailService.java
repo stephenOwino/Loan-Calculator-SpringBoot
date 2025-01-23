@@ -19,6 +19,9 @@ public class CustomerDetailService implements UserDetailsService {
         @Autowired
         private CustomerRepository repository;
 
+        public CustomerDetailService(Optional<Customer> customer) {
+        }
+
         @Override
         public UserDetails loadUserByUsername(String username) {
                 // Fetch the customer from the repository
