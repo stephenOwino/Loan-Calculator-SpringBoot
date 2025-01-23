@@ -47,6 +47,7 @@ public class CustomerController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
         }
 
+
         @GetMapping("/{id}")
         public ResponseEntity<CustomerResponseDto> getCustomerDetails(@PathVariable Long id) {
                 return customerService.getCustomerDetails(id)
