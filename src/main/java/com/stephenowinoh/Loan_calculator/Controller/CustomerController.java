@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -91,5 +92,38 @@ public class CustomerController {
                 } catch (BadCredentialsException e) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
                 }
+
         }
+        @GetMapping("/{id}")
+        public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long id) {
+                Optional<CustomerResponseDto> customerResponseDto = customerService.getCustomerDetails(id);
+                return customerResponseDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        }
+
+        // Endpoint to update customer details
+        @PutMapping("/{id}")
+        public ResponseEntity<CustomerResponseDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+                Optional<CustomerResponseDto> updatedCustomer = customerService.updateCustomer(id, customerDto);
+                return updatedCustomer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        }
+
+        // Endpoint to delete a customer
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+                try {
+                        customerService.deleteCustomer(id);
+                        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
+        }
+
+        // Endpoint to list all customers
+        @GetMapping
+        public ResponseEntity<List<CustomerResponseDto>> getAllCustomers() {
+                List<CustomerResponseDto> customers = customerService.getAllCustomers();
+                return ResponseEntity.ok(customers);
+        }
+
+
 }
