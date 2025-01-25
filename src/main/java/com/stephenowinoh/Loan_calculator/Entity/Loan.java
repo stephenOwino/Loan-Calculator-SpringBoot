@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -65,7 +66,6 @@ public class Loan {
 
         // Getters and setters for all fields
 
-
         public Long getId() {
                 return id;
         }
@@ -98,11 +98,11 @@ public class Loan {
                 this.phoneNumber = phoneNumber;
         }
 
-        public @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal getAmount() {
+        public BigDecimal getAmount() {
                 return amount;
         }
 
-        public void setAmount(@DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal amount) {
+        public void setAmount(BigDecimal amount) {
                 this.amount = amount;
         }
 
@@ -189,7 +189,9 @@ public class Loan {
         @PrePersist
         protected void onCreate() {
                 this.createdAt = LocalDateTime.now();
-                this.dueDate = this.createdAt.plusDays(this.loanTerm * 365); // Assuming loanTerm is in years
+                this.startDate = this.createdAt;
+                this.endDate = this.startDate.plusYears(this.loanTerm); // Set endDate based on loan term
+                this.dueDate = this.endDate; // Assuming dueDate is the same as endDate
         }
 
         public long getRemainingTimeInSeconds() {

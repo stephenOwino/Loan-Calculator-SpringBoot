@@ -20,6 +20,9 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+import java.time.LocalDateTime;
+
 @Service
 public class ServiceLoan implements IServiceLoan {
 
@@ -38,10 +41,16 @@ public class ServiceLoan implements IServiceLoan {
 
                 Loan loan = LoanMapper.toEntity(loanDto);
                 loan.setCustomer(customer);
+                loan.setStartDate(LocalDateTime.now());
+                loan.setEndDate(loan.getStartDate().plusYears(loan.getLoanTerm())); // Set endDate based on loan term
+                loan.setDueDate(loan.getEndDate()); // Assuming dueDate is the same as endDate
                 Loan savedLoan = loanRepository.save(loan);
 
                 return LoanMapper.toDto(savedLoan);
-        }
+
+
+        // Other methods...
+}
 
         @Override
         public LoanDto getLoanById(Long id) {
