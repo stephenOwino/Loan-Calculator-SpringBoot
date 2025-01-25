@@ -1,6 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +11,12 @@ public class GlobalExceptionHandler {
         // Handle CustomerNotFoundException
         @ExceptionHandler(CustomerNotFoundException.class)
         public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+                return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+        // Handle LoanNotFoundException
+        @ExceptionHandler(LoanNotFoundException.class)
+        public ResponseEntity<String> handleLoanNotFoundException(LoanNotFoundException ex) {
                 return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
 
@@ -27,4 +32,5 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>("An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 }
+
 

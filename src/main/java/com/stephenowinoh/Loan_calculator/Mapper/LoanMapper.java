@@ -6,28 +6,34 @@ import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
 
 public class LoanMapper {
 
-        // Map Loan entity to LoanDto
-        public static LoanDto toDto(Loan loan) {
-                return new LoanDto(
-                        loan.getId(),
-                        loan.getAmount(),
-                        loan.getTotalInterest(),
-                        loan.getTotalRepayment(),
-                        loan.getRepaymentFrequency().name(), // RepaymentFrequency enum as string
-                        loan.getCreatedAt(),
-                        loan.getDueDate() // Due date mapped from entity
-                );
-        }
+                public static LoanDto toDto(Loan loan) {
+                        if (loan == null) return null;
 
-        // Map LoanDto to Loan entity
-        public static Loan toEntity(LoanDto loanDto) {
-                Loan loan = new Loan();
-                loan.setAmount(loanDto.getAmount());
-                loan.setTotalInterest(loanDto.getTotalInterest());
-                loan.setTotalRepayment(loanDto.getTotalRepayment());
-                loan.setRepaymentFrequency(RepaymentFrequency.valueOf(loanDto.getRepaymentFrequency())); // Convert string back to enum
-                loan.setCreatedAt(loanDto.getCreatedAt());
-                loan.setDueDate(loanDto.getDueDate());
-                return loan;
+                        return new LoanDto(
+                                loan.getId(),
+                                loan.getAmount(),
+                                loan.getTotalInterest(),
+                                loan.getTotalRepayment(),
+                                loan.getRepaymentFrequency() != null ? loan.getRepaymentFrequency().name() : null,
+                                loan.getCreatedAt(),
+                                loan.getDueDate()
+                        );
+                }
+
+                public static Loan toEntity(LoanDto loanDto) {
+                        if (loanDto == null) return null;
+
+                        Loan loan = new Loan();
+                        loan.setAmount(loanDto.getAmount());
+                        loan.setTotalInterest(loanDto.getTotalInterest());
+                        loan.setTotalRepayment(loanDto.getTotalRepayment());
+                        loan.setRepaymentFrequency(
+                                loanDto.getRepaymentFrequency() != null
+                                        ? RepaymentFrequency.valueOf(loanDto.getRepaymentFrequency())
+                                        : null
+                        );
+                        loan.setCreatedAt(loanDto.getCreatedAt());
+                        loan.setDueDate(loanDto.getDueDate());
+                        return loan;
+                }
         }
-}

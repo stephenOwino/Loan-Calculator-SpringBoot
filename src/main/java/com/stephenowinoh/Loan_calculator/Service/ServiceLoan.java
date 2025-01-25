@@ -1,0 +1,111 @@
+package com.stephenowinoh.Loan_calculator.Service;
+
+
+import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Entity.Loan;
+import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
+import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
+import com.stephenowinoh.Loan_calculator.Exception.LoanNotFoundException;
+import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
+import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
+import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ServiceLoan implements IServiceLoan {
+
+        private final LoanRepository loanRepository;
+        private final CustomerRepository customerRepository;
+
+        public ServiceLoan(LoanRepository loanRepository, CustomerRepository customerRepository) {
+                this.loanRepository = loanRepository;
+                this.customerRepository = customerRepository;
+        }
+
+        @Override
+        public LoanDto createLoan(LoanDto loanDto, Long customerId) {
+                Customer customer = customerRepository.findById(customerId)
+                        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + customerId));
+
+                Loan loan = LoanMapper.toEntity(loanDto);
+                loan.setCustomer(customer);
+                Loan savedLoan = loanRepository.save(loan);
+
+                return LoanMapper.toDto(savedLoan);
+        }
+
+        @Override
+        public LoanDto getLoanById(Long id) {
+                Loan loan = loanRepository.findById(id)
+                        .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
+                return LoanMapper.toDto(loan);
+        }
+
+        @Override
+        public List<LoanDto> getAllLoans() {
+                return loanRepository.findAll()
+                        .stream()
+                        .map(LoanMapper::toDto)
+                        .collect(Collectors.toList());
+        }
+
+        @Override
+        public LoanDto updateLoan(Long id, LoanDto loanDto) {
+                Loan existingLoan = loanRepository.findById(id)
+                        .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
+
+                existingLoan.setAmount(loanDto.getAmount());
+                existingLoan.setTotalInterest(loanDto.getTotalInterest());
+                existingLoan.setTotalRepayment(loanDto.getTotalRepayment());
+                existingLoan.setRepaymentFrequency(
+                        RepaymentFrequency.valueOf(loanDto.getRepaymentFrequency())
+                );
+                existingLoan.setDueDate(loanDto.getDueDate());
+
+                Loan updatedLoan = loanRepository.save(existingLoan);
+                return LoanMapper.toDto(updatedLoan);
+        }
+
+        @Override
+        public void deleteLoan(Long id) {
+                if (!loanRepository.existsById(id)) {
+                        throw new LoanNotFoundException("Loan not found with ID: " + id);
+                }
+                loanRepository.deleteById(id);
+        }
+
+        @Override
+        public String generateLoanStatement(Long loanId) {
+                Loan loan = loanRepository.findById(loanId)
+                        .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + loanId));
+
+                // Simple loan statement generation
+                return String.format(
+                        "Loan Statement:\nLoan ID: %d\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
+                        loan.getId(),
+                        loan.getAmount(),
+                        loan.getTotalInterest(),
+                        loan.getTotalRepayment(),
+                        loan.getDueDate()
+                );
+        }
+        @Override
+        public Page<LoanDto> getAllLoans(int page, int size, String sortBy, String sortDir) {
+                Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+                Pageable pageable = PageRequest.of(page, size, sort);
+                Page<Loan> loans = loanRepository.findAll(pageable);
+                return loans.map(LoanMapper::toDto);
+        }
+}
+

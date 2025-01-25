@@ -2,19 +2,11 @@ package com.stephenowinoh.Loan_calculator.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class Loan {
 
@@ -23,9 +15,8 @@ public class Loan {
         private Long id;
 
         @Column(nullable = false)
-        @DecimalMin(value = "0.0", inclusive = false)
+        @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.")
         private BigDecimal amount;
-
 
         @Column(nullable = false)
         private BigDecimal totalInterest;
@@ -37,14 +28,14 @@ public class Loan {
         @Column(nullable = false)
         private RepaymentFrequency repaymentFrequency;
 
-        @Column(nullable = false)
-        private LocalDateTime createdAt = LocalDateTime.now();
+        @Column(nullable = false, updatable = false)
+        private LocalDateTime createdAt;
 
         @Column(nullable = false)
-        private LocalDateTime startDate; // Start date of repayment
+        private LocalDateTime startDate;
 
         @Column(nullable = false)
-        private LocalDateTime endDate; // End date of repayment
+        private LocalDateTime endDate;
 
         @ManyToOne
         @JoinColumn(name = "customer_id", nullable = false)
@@ -53,9 +44,25 @@ public class Loan {
         @OneToOne(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
         private RepaymentPlan repaymentPlan;
 
-        // If you need a specific dueDate field:
         @Column(nullable = false)
-        private LocalDateTime dueDate; // Explicit due date if separate from endDate
+        private LocalDateTime dueDate;
+
+        public Loan() {
+        }
+
+        public Loan(Long id, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, Customer customer, RepaymentPlan repaymentPlan, LocalDateTime dueDate) {
+                this.id = id;
+                this.amount = amount;
+                this.totalInterest = totalInterest;
+                this.totalRepayment = totalRepayment;
+                this.repaymentFrequency = repaymentFrequency;
+                this.createdAt = createdAt;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.customer = customer;
+                this.repaymentPlan = repaymentPlan;
+                this.dueDate = dueDate;
+        }
 
         public Long getId() {
                 return id;
@@ -65,11 +72,11 @@ public class Loan {
                 this.id = id;
         }
 
-        public BigDecimal getAmount() {
+        public @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal getAmount() {
                 return amount;
         }
 
-        public void setAmount(BigDecimal amount) {
+        public void setAmount(@DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal amount) {
                 this.amount = amount;
         }
 
@@ -114,6 +121,7 @@ public class Loan {
         }
 
         public LocalDateTime getEndDate() {
+
                 return endDate;
         }
 
@@ -145,20 +153,22 @@ public class Loan {
                 this.dueDate = dueDate;
         }
 
-        // Remaining time in seconds
-        public long getRemainingTimeInSeconds() {
-                return ChronoUnit.SECONDS.between(LocalDateTime.now(), this.dueDate); // or this.endDate
+        @PrePersist
+        protected void onCreate() {
+                this.createdAt = LocalDateTime.now();
         }
 
-// Method to return formatted remaining time in days, hours, minutes, seconds
+        public long getRemainingTimeInSeconds() {
+                return ChronoUnit.SECONDS.between(LocalDateTime.now(), this.dueDate);
+        }
+
         public String getFormattedRemainingTime() {
-                long remainingTimeInSeconds = getRemainingTimeInSeconds();
-                long days = remainingTimeInSeconds / (24 * 3600);
-                long hours = (remainingTimeInSeconds % (24 * 3600)) / 3600;
-                long minutes = (remainingTimeInSeconds % 3600) / 60;
-                long seconds = remainingTimeInSeconds % 60;
+                long remainingTime = getRemainingTimeInSeconds();
+                long days = remainingTime / (24 * 3600);
+                long hours = (remainingTime % (24 * 3600)) / 3600;
+                long minutes = (remainingTime % 3600) / 60;
+                long seconds = remainingTime % 60;
 
                 return String.format("%d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds);
         }
 }
-
