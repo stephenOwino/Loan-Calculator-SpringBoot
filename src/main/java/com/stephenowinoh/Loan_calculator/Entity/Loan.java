@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
+@Table(name = "Loans")
 public class Loan {
 
         @Id

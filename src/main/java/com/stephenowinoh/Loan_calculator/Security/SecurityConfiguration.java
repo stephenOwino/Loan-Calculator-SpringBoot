@@ -66,7 +66,6 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                         .build();
         }
 
-
         // CORS Configuration for allowed origins
         @Override
         public void addCorsMappings(CorsRegistry registry) {
@@ -77,4 +76,3 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                         .allowCredentials(true); // Allow credentials such as cookies
         }
 }
-
