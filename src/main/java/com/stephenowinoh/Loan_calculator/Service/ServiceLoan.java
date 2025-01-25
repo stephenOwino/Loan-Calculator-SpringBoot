@@ -47,10 +47,8 @@ public class ServiceLoan implements IServiceLoan {
                 Loan savedLoan = loanRepository.save(loan);
 
                 return LoanMapper.toDto(savedLoan);
+        }
 
-
-        // Other methods...
-}
 
         @Override
         public LoanDto getLoanById(Long id) {
