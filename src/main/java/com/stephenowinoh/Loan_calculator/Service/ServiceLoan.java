@@ -1,6 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Service;
 
-
 import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
@@ -13,7 +12,6 @@ import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +63,9 @@ public class ServiceLoan implements IServiceLoan {
                 Loan existingLoan = loanRepository.findById(id)
                         .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
 
+                existingLoan.setFullName(loanDto.getFullName());
+                existingLoan.setEmail(loanDto.getEmail());
+                existingLoan.setPhoneNumber(loanDto.getPhoneNumber());
                 existingLoan.setAmount(loanDto.getAmount());
                 existingLoan.setTotalInterest(loanDto.getTotalInterest());
                 existingLoan.setTotalRepayment(loanDto.getTotalRepayment());
@@ -72,6 +73,7 @@ public class ServiceLoan implements IServiceLoan {
                         RepaymentFrequency.valueOf(loanDto.getRepaymentFrequency())
                 );
                 existingLoan.setDueDate(loanDto.getDueDate());
+                existingLoan.setLoanTerm(loanDto.getLoanTerm());
 
                 Loan updatedLoan = loanRepository.save(existingLoan);
                 return LoanMapper.toDto(updatedLoan);
@@ -92,14 +94,18 @@ public class ServiceLoan implements IServiceLoan {
 
                 // Simple loan statement generation
                 return String.format(
-                        "Loan Statement:\nLoan ID: %d\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
+                        "Loan Statement:\nLoan ID: %d\nFull Name: %s\nEmail: %s\nPhone Number: %s\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
                         loan.getId(),
+                        loan.getFullName(),
+                        loan.getEmail(),
+                        loan.getPhoneNumber(),
                         loan.getAmount(),
                         loan.getTotalInterest(),
                         loan.getTotalRepayment(),
                         loan.getDueDate()
                 );
         }
+
         @Override
         public Page<LoanDto> getAllLoans(int page, int size, String sortBy, String sortDir) {
                 Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -108,4 +114,3 @@ public class ServiceLoan implements IServiceLoan {
                 return loans.map(LoanMapper::toDto);
         }
 }
-

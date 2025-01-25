@@ -15,6 +15,15 @@ public class Loan {
         private Long id;
 
         @Column(nullable = false)
+        private String fullName;
+
+        @Column(nullable = false)
+        private String email;
+
+        @Column(nullable = false)
+        private String phoneNumber;
+
+        @Column(nullable = false)
         @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.")
         private BigDecimal amount;
 
@@ -37,6 +46,9 @@ public class Loan {
         @Column(nullable = false)
         private LocalDateTime endDate;
 
+        @Column(nullable = false)
+        private int loanTerm; // Loan term in years
+
         @ManyToOne
         @JoinColumn(name = "customer_id", nullable = false)
         private Customer customer;
@@ -50,19 +62,8 @@ public class Loan {
         public Loan() {
         }
 
-        public Loan(Long id, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, Customer customer, RepaymentPlan repaymentPlan, LocalDateTime dueDate) {
-                this.id = id;
-                this.amount = amount;
-                this.totalInterest = totalInterest;
-                this.totalRepayment = totalRepayment;
-                this.repaymentFrequency = repaymentFrequency;
-                this.createdAt = createdAt;
-                this.startDate = startDate;
-                this.endDate = endDate;
-                this.customer = customer;
-                this.repaymentPlan = repaymentPlan;
-                this.dueDate = dueDate;
-        }
+        // Getters and setters for all fields
+
 
         public Long getId() {
                 return id;
@@ -70,6 +71,30 @@ public class Loan {
 
         public void setId(Long id) {
                 this.id = id;
+        }
+
+        public String getFullName() {
+                return fullName;
+        }
+
+        public void setFullName(String fullName) {
+                this.fullName = fullName;
+        }
+
+        public String getEmail() {
+                return email;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
+        }
+
+        public String getPhoneNumber() {
+                return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+                this.phoneNumber = phoneNumber;
         }
 
         public @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal getAmount() {
@@ -121,12 +146,19 @@ public class Loan {
         }
 
         public LocalDateTime getEndDate() {
-
                 return endDate;
         }
 
         public void setEndDate(LocalDateTime endDate) {
                 this.endDate = endDate;
+        }
+
+        public int getLoanTerm() {
+                return loanTerm;
+        }
+
+        public void setLoanTerm(int loanTerm) {
+                this.loanTerm = loanTerm;
         }
 
         public Customer getCustomer() {
@@ -156,6 +188,7 @@ public class Loan {
         @PrePersist
         protected void onCreate() {
                 this.createdAt = LocalDateTime.now();
+                this.dueDate = this.createdAt.plusDays(this.loanTerm * 365); // Assuming loanTerm is in years
         }
 
         public long getRemainingTimeInSeconds() {

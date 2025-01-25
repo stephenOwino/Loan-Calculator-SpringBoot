@@ -1,6 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Controller;
 
-
 import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
 import com.stephenowinoh.Loan_calculator.Service.ServiceLoan;
 import org.springframework.data.domain.Page;
