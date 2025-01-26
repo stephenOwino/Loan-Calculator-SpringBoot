@@ -15,12 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration implements WebMvcConfigurer {
+public class SecurityConfiguration {
 
         @Autowired
         private CustomerDetailService customerDetailService;
@@ -28,13 +26,13 @@ public class SecurityConfiguration implements WebMvcConfigurer {
         @Autowired
         private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-        // PasswordEncoder Bean
+        // Bean for Password Encoder
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder(12);
         }
 
-        // AuthenticationProvider Bean
+        // Bean for AuthenticationProvider
         @Bean
         public AuthenticationProvider authenticationProvider() {
                 DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -43,29 +41,24 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 return provider;
         }
 
-        // AuthenticationManager Bean
+        // Bean for AuthenticationManager
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
 
-        // SecurityFilterChain Bean
+        // Security filter chain for configuring HTTP security
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 return http
                         .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/customers/register/**", "/api/customers/authenticate") // Exclude register and login
-                                .permitAll()  // Allow public access to register and login
-                                .requestMatchers("/api/users/profile") // Profile endpoint: only accessible by authenticated users
-                                .authenticated()  // Require authentication for /profile
+                                .requestMatchers("/api/customers/register/**", "/api/customers/authenticate") // Public endpoints
+                                .permitAll()
                                 .anyRequest()
-                                .authenticated())  // Secure all other endpoints
-                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions (JWT-based)
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before UsernamePasswordAuthenticationFilter
+                                .authenticated()) // All other endpoints require authentication
+                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless session
+                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
                         .build();
         }
-
-
-
 }

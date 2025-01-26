@@ -6,15 +6,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
         @Override
         public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
+                registry.addMapping("/**") // Apply CORS to all endpoints
                         .allowedOrigins(
-                                "https://loan-calculator-react.onrender.com", // Your deployed React app
-                                "http://localhost:5173" // Your local React app for testing
+                                "https://loan-calculator-react.onrender.com", // Deployed React app
+                                "http://localhost:5173" // Local React app for testing
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Specify allowed HTTP methods
-                        .allowedHeaders("Authorization", "Content-Type") // Allow specific headers
-                        .allowCredentials(true); // Allow cookies and Authorization header
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow specific HTTP methods
+                        .allowedHeaders("Authorization", "Content-Type") // Allow required headers
+                        .allowCredentials(true); // Support credentials (cookies/authorization headers)
         }
 }
