@@ -65,13 +65,16 @@ public class SecurityConfiguration {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration config = new CorsConfiguration();
                 config.addAllowedOrigin("https://loan-calculator-react.onrender.com");
-                config.addAllowedMethod("*");
+                config.addAllowedMethod("GET");
+                config.addAllowedMethod("POST");
+                config.addAllowedMethod("PUT");
+                config.addAllowedMethod("DELETE");
                 config.addAllowedHeader("*");
                 config.setAllowCredentials(true);
                 config.setMaxAge(3600L);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", config);
+                source.registerCorsConfiguration("/**", config);  // Apply the configuration to all routes
 
                 return source;
         }
