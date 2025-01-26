@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name = "Loans")
+@Table(name = "loans")
 public class Loan {
 
         @Id
@@ -59,6 +59,9 @@ public class Loan {
 
         @Column(nullable = false)
         private LocalDateTime dueDate;
+
+        @Column(nullable = false)
+        private String purpose; // New field for the purpose of the loan
 
         public Loan() {
         }
@@ -183,6 +186,14 @@ public class Loan {
 
         public void setDueDate(LocalDateTime dueDate) {
                 this.dueDate = dueDate;
+        }
+
+        public String getPurpose() {
+                return purpose;
+        }
+
+        public void setPurpose(String purpose) {
+                this.purpose = purpose;
         }
 
         @PrePersist

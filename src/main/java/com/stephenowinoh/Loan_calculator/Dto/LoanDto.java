@@ -19,6 +19,7 @@ public class LoanDto {
         private LocalDateTime endDate;
         private int loanTerm;
         private LocalDateTime dueDate;
+        private String purpose; // New field for the purpose of the loan
 
         // Getters and setters...
 
@@ -132,5 +133,13 @@ public class LoanDto {
 
         public void setDueDate(LocalDateTime dueDate) {
                 this.dueDate = dueDate;
+        }
+
+        public String getPurpose() {
+                return purpose;
+        }
+
+        public void setPurpose(String purpose) {
+                this.purpose = purpose;
         }
 }

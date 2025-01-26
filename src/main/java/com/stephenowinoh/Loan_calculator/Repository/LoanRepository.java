@@ -1,6 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Repository;
 
 
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,8 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
         // Find all loans by repayment frequency
         List<Loan> findByRepaymentFrequency(String repaymentFrequency);
+
+        List<Loan> findByCustomerAndEndDateAfter(Customer customer, LocalDateTime now);
 
         // Optional: Add custom queries if needed (e.g., for overdue loans)
         // @Query("SELECT l FROM Loan l WHERE l.dueDate < :currentDate")

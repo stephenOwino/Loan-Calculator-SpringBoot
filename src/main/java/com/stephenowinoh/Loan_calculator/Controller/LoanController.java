@@ -26,6 +26,8 @@ public class LoanController {
                 return new ResponseEntity<>(createdLoan, HttpStatus.CREATED);
         }
 
+
+
         // Get a loan by its ID
         @GetMapping("/{id}")
         public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {

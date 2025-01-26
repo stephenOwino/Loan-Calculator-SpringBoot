@@ -23,6 +23,20 @@ import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 
+
+import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Entity.Loan;
+import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
+import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
+import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
+import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class ServiceLoan implements IServiceLoan {
 
@@ -39,8 +53,21 @@ public class ServiceLoan implements IServiceLoan {
                 Customer customer = customerRepository.findById(customerId)
                         .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + customerId));
 
+                // Check the number of active loans
+                List<Loan> activeLoans = loanRepository.findByCustomerAndEndDateAfter(customer, LocalDateTime.now());
+                if (activeLoans.size() >= 3) {
+                        throw new IllegalStateException("Customer cannot have more than three active loans.");
+                }
+
+                // Calculate totalInterest and totalRepayment
+                BigDecimal interestRate = calculateInterestRate(loanDto.getAmount());
+                BigDecimal totalInterest = loanDto.getAmount().multiply(interestRate);
+                BigDecimal totalRepayment = loanDto.getAmount().add(totalInterest);
+
                 Loan loan = LoanMapper.toEntity(loanDto);
                 loan.setCustomer(customer);
+                loan.setTotalInterest(totalInterest);
+                loan.setTotalRepayment(totalRepayment);
                 loan.setStartDate(LocalDateTime.now());
                 loan.setEndDate(loan.getStartDate().plusYears(loan.getLoanTerm())); // Set endDate based on loan term
                 loan.setDueDate(loan.getEndDate()); // Assuming dueDate is the same as endDate
@@ -49,6 +76,18 @@ public class ServiceLoan implements IServiceLoan {
                 return LoanMapper.toDto(savedLoan);
         }
 
+        private BigDecimal calculateInterestRate(BigDecimal amount) {
+                if (amount.compareTo(BigDecimal.valueOf(10000)) >= 0 && amount.compareTo(BigDecimal.valueOf(100000)) <= 0) {
+                        return BigDecimal.valueOf(0.07);
+                } else if (amount.compareTo(BigDecimal.valueOf(100000)) > 0 && amount.compareTo(BigDecimal.valueOf(500000)) <= 0) {
+                        return BigDecimal.valueOf(0.05);
+                } else if (amount.compareTo(BigDecimal.valueOf(500000)) > 0 && amount.compareTo(BigDecimal.valueOf(1000000)) <= 0) {
+                        return BigDecimal.valueOf(0.03);
+                } else {
+                        throw new IllegalArgumentException("Invalid loan amount");
+                }
+
+        }
 
         @Override
         public LoanDto getLoanById(Long id) {
