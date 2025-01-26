@@ -45,31 +45,31 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -d '{"serviceId": "your-render-service-id"}'
 
-      # Step 7: Run Docker container with environment variables
-      - name: Run Docker container
+      # Step 7: Create Docker network
+      - name: Create Docker network
         run: |
-          docker network create loan-calculator-network || true
+          docker network create loan-calculator-network || echo "Network already exists"
 
-          # Step 7: Run Docker container for backend1
-          - name: Run Docker container backend1
-            run: |
-              docker run -d \
-                --network loan-calculator-network \
-                -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-                -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-                -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-                -p 9500:9500 \
-                --name backend1 \
-                loan-calculator
+      # Step 8: Run Docker container for backend1
+      - name: Run Docker container backend1
+        run: |
+          docker run -d \
+            --network loan-calculator-network \
+            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            -p 9500:9500 \
+            --name backend1 \
+            loan-calculator
 
-          # Step 8: Run Docker container for backend2 with a different port
-          - name: Run Docker container backend2
-            run: |
-              docker run -d \
-                --network loan-calculator-network \
-                -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-                -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-                -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-                -p 9501:9500 \
-                --name backend2 \
-                loan-calculator
+      # Step 9: Run Docker container for backend2 with a different port
+      - name: Run Docker container backend2
+        run: |
+          docker run -d \
+            --network loan-calculator-network \
+            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            -p 9501:9500 \
+            --name backend2 \
+            loan-calculator
