@@ -1,6 +1,5 @@
 name: CI/CD Pipeline for Loan Calculator (Docker)
 
-# Trigger this workflow when pushing changes to the main branch or the 'steve' branch
 on:
   push:
     branches:
@@ -16,12 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Docker (without docker-compose)
+      # Step 2: Set up Docker
       - name: Set up Docker
         run: |
           docker --version
 
-      # Step 3: Build the Docker image
+      # Step 3: Build Docker image
       - name: Build Docker image
         run: |
           docker build -t loan-calculator .
@@ -33,25 +32,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 5: Push Docker image to DockerHub (using your username 'otizaaa')
+      # Step 5: Push Docker image to DockerHub
       - name: Push Docker image to DockerHub
         run: |
           docker tag loan-calculator otizaaa/loan-calculator:latest
           docker push otizaaa/loan-calculator:latest
 
-      # Step 6: Deploy the Docker container to Render
+      # Step 6: Deploy to Render
       - name: Deploy to Render
         run: |
           curl -X POST https://api.render.com/deploy/sync \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -d '{"serviceId": "your-render-service-id"}'
 
-      # Step 7: Run Docker container with environment variables (for DB credentials)
+      # Step 7: Run Docker container
       - name: Run Docker container
         run: |
           docker run -d \
             -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            -p 9500:9500 \
             --name loan-calculator-container \
             otizaaa/loan-calculator:latest
