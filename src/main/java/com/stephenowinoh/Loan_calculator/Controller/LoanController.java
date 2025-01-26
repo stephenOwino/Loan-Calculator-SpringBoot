@@ -9,6 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
+import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Service.ServiceLoan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/api/loans")
 public class LoanController {
@@ -26,8 +34,7 @@ public class LoanController {
                 return new ResponseEntity<>(createdLoan, HttpStatus.CREATED);
         }
 
-
-
+        
         // Get a loan by its ID
         @GetMapping("/{id}")
         public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {

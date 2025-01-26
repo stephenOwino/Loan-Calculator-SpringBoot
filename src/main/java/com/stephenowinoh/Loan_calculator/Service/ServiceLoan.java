@@ -24,18 +24,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 
-import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
-import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Entity.Loan;
-import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
-import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
-import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
-import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ServiceLoan implements IServiceLoan {
@@ -64,6 +53,15 @@ public class ServiceLoan implements IServiceLoan {
                 BigDecimal totalInterest = loanDto.getAmount().multiply(interestRate);
                 BigDecimal totalRepayment = loanDto.getAmount().add(totalInterest);
 
+                // Implement business logic for partial repayments
+                if (activeLoans.size() == 1) {
+                        // If the customer has one active loan, allow a second loan with the same amount
+                        totalRepayment = loanDto.getAmount().add(totalInterest);
+                } else if (activeLoans.size() == 2) {
+                        // If the customer has two active loans, allow a third loan with half the amount
+                        totalRepayment = loanDto.getAmount().divide(BigDecimal.valueOf(2)).add(totalInterest);
+                }
+
                 Loan loan = LoanMapper.toEntity(loanDto);
                 loan.setCustomer(customer);
                 loan.setTotalInterest(totalInterest);
@@ -71,6 +69,7 @@ public class ServiceLoan implements IServiceLoan {
                 loan.setStartDate(LocalDateTime.now());
                 loan.setEndDate(loan.getStartDate().plusYears(loan.getLoanTerm())); // Set endDate based on loan term
                 loan.setDueDate(loan.getEndDate()); // Assuming dueDate is the same as endDate
+                loan.setPurpose(loanDto.getPurpose()); // Set the purpose field
                 Loan savedLoan = loanRepository.save(loan);
 
                 return LoanMapper.toDto(savedLoan);
@@ -86,7 +85,6 @@ public class ServiceLoan implements IServiceLoan {
                 } else {
                         throw new IllegalArgumentException("Invalid loan amount");
                 }
-
         }
 
         @Override
