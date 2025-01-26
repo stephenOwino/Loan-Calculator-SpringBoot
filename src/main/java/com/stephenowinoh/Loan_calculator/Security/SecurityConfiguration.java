@@ -66,13 +66,6 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                         .build();
         }
 
-        // CORS Configuration for allowed origins
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("https://loan-calculator-react.onrender.com") // Frontend URL
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*")
-                        .allowCredentials(true); // Allow credentials such as cookies
-        }
+
+
 }
