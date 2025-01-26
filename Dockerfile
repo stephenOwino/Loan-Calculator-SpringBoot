@@ -24,15 +24,3 @@ EXPOSE 9500
 
 # Command to run the application
 ENTRYPOINT ["java", "-jar", "loan-calculator.jar"]
-
-# Use NGINX as the base image for the web server
-FROM nginx:alpine
-
-# Copy the NGINX configuration file into the container
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Expose port 80 for NGINX
-EXPOSE 80
-
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
