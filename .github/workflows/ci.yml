@@ -50,20 +50,26 @@ jobs:
         run: |
           docker network create loan-calculator-network || true
 
-          docker run -d \
-            --network loan-calculator-network \
-            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            -p 9500:9500 \
-            --name backend1 \
-            otizaaa/loan-calculator:latest
+          # Step 7: Run Docker container for backend1
+          - name: Run Docker container backend1
+            run: |
+              docker run -d \
+                --network loan-calculator-network \
+                -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+                -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+                -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+                -p 9500:9500 \
+                --name backend1 \
+                loan-calculator
 
-          docker run -d \
-            --network loan-calculator-network \
-            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            -p 9500:9500 \
-            --name backend2 \
-            otizaaa/loan-calculator:latest
+          # Step 8: Run Docker container for backend2 with a different port
+          - name: Run Docker container backend2
+            run: |
+              docker run -d \
+                --network loan-calculator-network \
+                -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+                -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+                -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+                -p 9501:9500 \
+                --name backend2 \
+                loan-calculator
