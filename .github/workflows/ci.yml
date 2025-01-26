@@ -45,13 +45,25 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -d '{"serviceId": "your-render-service-id"}'
 
-      # Step 7: Run Docker container
+      # Step 7: Run Docker container with environment variables
       - name: Run Docker container
         run: |
+          docker network create loan-calculator-network || true
+
           docker run -d \
+            --network loan-calculator-network \
             -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
             -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
             -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
             -p 9500:9500 \
-            --name loan-calculator-container \
+            --name backend1 \
+            otizaaa/loan-calculator:latest
+
+          docker run -d \
+            --network loan-calculator-network \
+            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            -p 9500:9500 \
+            --name backend2 \
             otizaaa/loan-calculator:latest
