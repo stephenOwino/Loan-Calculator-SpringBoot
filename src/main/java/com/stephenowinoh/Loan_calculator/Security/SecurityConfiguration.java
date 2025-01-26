@@ -61,15 +61,17 @@ public class SecurityConfiguration {
                 return http.build();
         }
 
+
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration config = new CorsConfiguration();
-                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");
+                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Ensure this matches your React app URL
                 config.addAllowedMethod("GET");
                 config.addAllowedMethod("POST");
                 config.addAllowedMethod("PUT");
                 config.addAllowedMethod("DELETE");
-                config.addAllowedHeader("*");
+                config.addAllowedHeader("*");  // Allow all headers, including 'Authorization'
+                config.addAllowedHeader("Authorization");
                 config.setAllowCredentials(true);
                 config.setMaxAge(3600L);
 
