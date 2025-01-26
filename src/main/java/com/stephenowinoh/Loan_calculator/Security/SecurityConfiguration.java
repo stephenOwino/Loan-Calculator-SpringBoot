@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -26,13 +30,11 @@ public class SecurityConfiguration {
         @Autowired
         private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-        // Bean for Password Encoder
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder(12);
         }
 
-        // Bean for AuthenticationProvider
         @Bean
         public AuthenticationProvider authenticationProvider() {
                 DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -41,24 +43,36 @@ public class SecurityConfiguration {
                 return provider;
         }
 
-        // Bean for AuthenticationManager
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
 
-        // Security filter chain for configuring HTTP security
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                return http
-                        .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
+                http.csrf(csrf -> csrf.disable())
+                        .cors(Customizer.withDefaults()) // Use the default CORS configuration
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/customers/register/**", "/api/customers/authenticate") // Public endpoints
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()) // All other endpoints require authentication
-                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless session
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
-                        .build();
+                                .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
+                                .anyRequest().authenticated())
+                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
+        }
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration config = new CorsConfiguration();
+                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");
+                config.addAllowedMethod("*");
+                config.addAllowedHeader("*");
+                config.setAllowCredentials(true);
+                config.setMaxAge(3600L);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", config);
+
+                return source;
         }
 }
