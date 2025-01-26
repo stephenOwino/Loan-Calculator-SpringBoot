@@ -26,6 +26,20 @@ import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
 
+
+import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Entity.Loan;
+import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
+import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
+import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
+import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class ServiceLoan implements IServiceLoan {
 
