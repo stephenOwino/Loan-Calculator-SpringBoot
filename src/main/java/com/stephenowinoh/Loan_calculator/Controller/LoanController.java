@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
-@CrossOrigin(origins = "https://loan-calculator-react.onrender.com")
+
 public class LoanController {
 
         private final ServiceLoan serviceLoan;
