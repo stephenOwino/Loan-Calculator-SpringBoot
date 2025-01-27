@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IServiceLoan {
-        LoanDto createLoan(LoanDto loanDto, Long customerId);
+
+        LoanDto createLoan(LoanDto loanDto, String username);
+
         LoanDto getLoanById(Long id);
         List<LoanDto> getAllLoans();
         LoanDto updateLoan(Long id, LoanDto loanDto);

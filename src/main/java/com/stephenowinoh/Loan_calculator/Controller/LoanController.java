@@ -5,6 +5,8 @@ import com.stephenowinoh.Loan_calculator.Service.ServiceLoan;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,10 @@ public class LoanController {
         }
 
         // Create a loan for a customer
-        @PostMapping("/{customerId}")
-        public ResponseEntity<LoanDto> createLoan(@RequestBody LoanDto loanDto, @PathVariable Long customerId) {
-                LoanDto createdLoan = serviceLoan.createLoan(loanDto, customerId);
+        @PostMapping
+        public ResponseEntity<LoanDto> createLoan(@RequestBody LoanDto loanDto, @AuthenticationPrincipal UserDetails userDetails) {
+                String username = userDetails.getUsername();
+                LoanDto createdLoan = serviceLoan.createLoan(loanDto, username);
                 return new ResponseEntity<>(createdLoan, HttpStatus.CREATED);
         }
 

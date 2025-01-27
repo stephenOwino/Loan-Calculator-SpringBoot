@@ -9,36 +9,16 @@ import com.stephenowinoh.Loan_calculator.Exception.LoanNotFoundException;
 import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
-
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-
-import java.time.LocalDateTime;
-
-
-import java.math.BigDecimal;
-
-
-import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
-import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Entity.Loan;
-import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
-import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
-import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
-import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceLoan implements IServiceLoan {
@@ -52,9 +32,9 @@ public class ServiceLoan implements IServiceLoan {
         }
 
         @Override
-        public LoanDto createLoan(LoanDto loanDto, Long customerId) {
-                Customer customer = customerRepository.findById(customerId)
-                        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with ID: " + customerId));
+        public LoanDto createLoan(LoanDto loanDto, String username) {
+                Customer customer = customerRepository.findByUsername(username)
+                        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with username: " + username));
 
                 // Check the number of active loans
                 List<Loan> activeLoans = loanRepository.findByCustomerAndEndDateAfter(customer, LocalDateTime.now());
