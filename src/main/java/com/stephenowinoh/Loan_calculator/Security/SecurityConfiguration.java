@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
+        public class SecurityConfiguration {
 
         @Autowired
         private CustomerDetailService customerDetailService;
@@ -61,7 +61,6 @@ public class SecurityConfiguration {
                 return http.build();
         }
 
-
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration config = new CorsConfiguration();
@@ -80,4 +79,6 @@ public class SecurityConfiguration {
 
                 return source;
         }
+
+
 }
