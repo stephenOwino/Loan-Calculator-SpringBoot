@@ -144,6 +144,31 @@ public class ServiceLoan implements IServiceLoan {
                 );
         }
 
+        public String generateLoanStatementForUser(String username) {
+                Customer customer = customerRepository.findByUsername(username)
+                        .orElseThrow(() -> new CustomerNotFoundException("Customer not found with username: " + username));
+
+                List<Loan> loans = loanRepository.findByCustomer(customer);
+                if (loans.isEmpty()) {
+                        throw new LoanNotFoundException("No loans found for customer with username: " + username);
+                }
+
+                Loan loan = loans.get(0); // Assuming we want the statement for the first loan
+
+                // Simple loan statement generation
+                return String.format(
+                        "Loan Statement:\nLoan ID: %d\nFull Name: %s\nEmail: %s\nPhone Number: %s\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
+                        loan.getId(),
+                        loan.getFullName(),
+                        loan.getEmail(),
+                        loan.getPhoneNumber(),
+                        loan.getAmount(),
+                        loan.getTotalInterest(),
+                        loan.getTotalRepayment(),
+                        loan.getDueDate()
+                );
+        }
+
         @Override
         public Page<LoanDto> getAllLoans(int page, int size, String sortBy, String sortDir) {
                 Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

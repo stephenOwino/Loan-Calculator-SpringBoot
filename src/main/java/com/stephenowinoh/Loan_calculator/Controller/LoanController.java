@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
-
 public class LoanController {
 
         private final ServiceLoan serviceLoan;
@@ -30,7 +29,6 @@ public class LoanController {
                 return new ResponseEntity<>(createdLoan, HttpStatus.CREATED);
         }
 
-        
         // Get a loan by its ID
         @GetMapping("/{id}")
         public ResponseEntity<LoanDto> getLoanById(@PathVariable Long id) {
@@ -59,10 +57,11 @@ public class LoanController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        // Generate loan statement
-        @GetMapping("/{loanId}/statement")
-        public ResponseEntity<String> generateLoanStatement(@PathVariable Long loanId) {
-                String statement = serviceLoan.generateLoanStatement(loanId);
+        // Generate loan statement for the authenticated user
+        @GetMapping("/statement")
+        public ResponseEntity<String> generateLoanStatement(@AuthenticationPrincipal UserDetails userDetails) {
+                String username = userDetails.getUsername();
+                String statement = serviceLoan.generateLoanStatementForUser(username);
                 return new ResponseEntity<>(statement, HttpStatus.OK);
         }
 
@@ -77,4 +76,3 @@ public class LoanController {
                 return new ResponseEntity<>(loans, HttpStatus.OK);
         }
 }
-

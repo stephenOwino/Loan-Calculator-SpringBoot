@@ -26,6 +26,8 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
         List<Loan> findByCustomerAndEndDateAfter(Customer customer, LocalDateTime now);
 
+        List<Loan> findByCustomer(Customer customer);
+
         // Optional: Add custom queries if needed (e.g., for overdue loans)
         // @Query("SELECT l FROM Loan l WHERE l.dueDate < :currentDate")
         // List<Loan> findOverdueLoans(@Param("currentDate") LocalDateTime currentDate);
