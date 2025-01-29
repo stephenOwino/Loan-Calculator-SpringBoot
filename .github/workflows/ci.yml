@@ -1,50 +1,33 @@
-name: CI/CD Pipeline for Loan Calculator (Docker)
+name: CI
 
 on:
   push:
     branches:
-      - main
+      - steve
+  pull_request:
+    branches:
       - steve
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from the repository
-      - name: Checkout code
+      - name: Check out the code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Docker
       - name: Set up Docker
-        run: |
-          docker --version
+        uses: docker/setup-buildx-action@v1
 
-      # Step 3: Build Docker image for backend
-      - name: Build Docker image
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Build and run Docker Compose
         run: |
           docker-compose -f docker-compose.yml build
-
-      # Step 4: Log in to DockerHub
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # Step 5: Push Docker image to DockerHub
-      - name: Push Docker image to DockerHub
-        run: |
-          docker-compose push
-
-      # Step 6: Deploy to Render
-      - name: Deploy to Render
-        run: |
-          curl -X POST https://api.render.com/deploy/sync \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -d '{"serviceId": "your-render-service-id"}'
-
-      # Step 7: Run Docker containers using Docker Compose
-      - name: Run Docker containers
-        run: |
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up
