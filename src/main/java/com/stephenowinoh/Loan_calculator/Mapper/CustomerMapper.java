@@ -27,13 +27,14 @@ public class CustomerMapper {
         }
 
         // Maps Customer entity to CustomerResponseDto
+        // Maps Customer entity to CustomerResponseDto
         public static CustomerResponseDto toDto(Customer customer) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String formattedDate = customer.getCreatedAt().format(formatter);
 
                 // Create CustomerResponseDto using the new constructor
                 return new CustomerResponseDto(
-                        customer.getId(),
+                        Long.valueOf(customer.getId()), // Ensure it's a Long, not a primitive long
                         customer.getFirstName(),
                         customer.getLastName(),
                         customer.getUsername(),
@@ -42,4 +43,5 @@ public class CustomerMapper {
                         customer.getRole().name() // Converting the Role enum to string for the name field
                 );
         }
+
 }
