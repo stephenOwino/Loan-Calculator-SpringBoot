@@ -2,7 +2,6 @@ package com.stephenowinoh.Loan_calculator.Mapper;
 
 import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
-import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
 
 public class LoanMapper {
 
@@ -14,17 +13,10 @@ public class LoanMapper {
 
                 Loan loan = new Loan();
                 loan.setId(loanDto.getId());
-                // Assuming you fetch the customer from the database by ID
-                // loan.setCustomer(fetchCustomerById(loanDto.getCustomerId()));
                 loan.setAmount(loanDto.getAmount());
                 loan.setTotalInterest(loanDto.getTotalInterest());
                 loan.setTotalRepayment(loanDto.getTotalRepayment());
-
-                // Handle enum conversion directly
-                if (loanDto.getRepaymentFrequency() != null) {
-                        loan.setRepaymentFrequency(loanDto.getRepaymentFrequency());  // Direct assignment if RepaymentFrequency is an enum
-                }
-
+                loan.setRepaymentFrequency(loanDto.getRepaymentFrequency());
                 loan.setCreatedAt(loanDto.getCreatedAt());
                 loan.setStartDate(loanDto.getStartDate());
                 loan.setEndDate(loanDto.getEndDate());
@@ -36,5 +28,30 @@ public class LoanMapper {
                 loan.setInterestRate(loanDto.getInterestRate());
 
                 return loan;
+        }
+
+        // ✅  THIS METHOD TO FIX THE ERROR
+        public static LoanDTO toDto(Loan loan) {
+                if (loan == null) {
+                        return null;
+                }
+
+                LoanDTO loanDto = new LoanDTO();
+                loanDto.setId(loan.getId());
+                loanDto.setAmount(loan.getAmount());
+                loanDto.setTotalInterest(loan.getTotalInterest());
+                loanDto.setTotalRepayment(loan.getTotalRepayment());
+                loanDto.setRepaymentFrequency(loan.getRepaymentFrequency());
+                loanDto.setCreatedAt(loan.getCreatedAt());
+                loanDto.setStartDate(loan.getStartDate());
+                loanDto.setEndDate(loan.getEndDate());
+                loanDto.setLoanTerm(loan.getLoanTerm());
+                loanDto.setDueDate(loan.getDueDate());
+                loanDto.setPurpose(loan.getPurpose());
+                loanDto.setStatus(loan.getStatus());
+                loanDto.setPaymentDate(loan.getPaymentDate());
+                loanDto.setInterestRate(loan.getInterestRate());
+
+                return loanDto;
         }
 }
