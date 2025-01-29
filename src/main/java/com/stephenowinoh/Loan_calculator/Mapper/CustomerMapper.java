@@ -1,4 +1,3 @@
-
 package com.stephenowinoh.Loan_calculator.Mapper;
 
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
@@ -20,8 +19,10 @@ public class CustomerMapper {
                 customer.setUsername(dto.getUsername());
                 customer.setEmail(dto.getEmail());
                 customer.setPassword(dto.getPassword()); // Will be encoded later
-                // Set default role as CUSTOMER or any role logic you want
-                customer.setRole(Role.CUSTOMER);
+
+                // Set role directly from the DTO
+                customer.setRole(dto.getRole());
+
                 return customer;
         }
 
@@ -30,6 +31,7 @@ public class CustomerMapper {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String formattedDate = customer.getCreatedAt().format(formatter);
 
+                // Create CustomerResponseDto using the new constructor
                 return new CustomerResponseDto(
                         customer.getId(),
                         customer.getFirstName(),
@@ -37,7 +39,7 @@ public class CustomerMapper {
                         customer.getUsername(),
                         customer.getEmail(),
                         formattedDate,
-                        customer.getRole().name() // Added role to the response DTO
+                        customer.getRole().name() // Converting the Role enum to string for the name field
                 );
         }
 }

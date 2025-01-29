@@ -10,7 +10,7 @@ public class CustomerDto {
         private String email;
         private String password;
         private String confirmPassword;
-        private Role role;  // Added role field
+        private Role role;  // Role field as an enum
 
         // Constructors, getters, and setters...
 

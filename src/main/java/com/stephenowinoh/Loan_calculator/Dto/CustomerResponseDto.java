@@ -1,7 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
-import com.stephenowinoh.Loan_calculator.Role.Role;
-
 public class CustomerResponseDto {
 
         private Long id;
@@ -10,21 +8,17 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
-        private String role; // Added role field as String
+        private String name; // role as a string (instead of enum)
 
-        // Default constructor
-        public CustomerResponseDto() {
-        }
-
-        // Constructor with parameters, converting Role enum to String
-        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, Role role) {
+        // Constructor with role as name field
+        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String name) {
                 this.id = id;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.username = username;
                 this.email = email;
                 this.createdAt = createdAt;
-                this.role = role.name(); // Convert Role enum to String
+                this.name = name; // role as name
         }
 
         // Getters and setters
@@ -76,11 +70,11 @@ public class CustomerResponseDto {
                 this.createdAt = createdAt;
         }
 
-        public String getRole() {
-                return role; // Getter for role
+        public String getName() {
+                return name;
         }
 
-        public void setRole(String role) {
-                this.role = role; // Setter for role
+        public void setName(String name) {
+                this.name = name;
         }
 }
