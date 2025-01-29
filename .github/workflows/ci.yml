@@ -16,11 +16,12 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
+          distribution: 'temurin'
           java-version: '17'
-          distribution: 'adoptopenjdk'
+
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
