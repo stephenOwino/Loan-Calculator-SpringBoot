@@ -6,7 +6,7 @@ public enum RepaymentFrequency {
         MONTHLY("Monthly"),
         YEARLY("Yearly");
 
-        private final String displayName;
+        private String displayName;
 
         RepaymentFrequency(String displayName) {
                 this.displayName = displayName;
@@ -16,13 +16,12 @@ public enum RepaymentFrequency {
                 return displayName;
         }
 
-        // Optional: Method to return enum by display name if needed
-        public static RepaymentFrequency fromDisplayName(String displayName) {
-                for (RepaymentFrequency frequency : RepaymentFrequency.values()) {
-                        if (frequency.getDisplayName().equalsIgnoreCase(displayName)) {
+        public static RepaymentFrequency fromDisplayName(String name) {
+                for (RepaymentFrequency frequency : values()) {
+                        if (frequency.name().equalsIgnoreCase(name)) {
                                 return frequency;
                         }
                 }
-                throw new IllegalArgumentException("Unknown frequency: " + displayName);
+                return null;  // or handle this case appropriately
         }
 }

@@ -23,7 +23,7 @@ jobs:
       # Step 3: Build Docker image for backend
       - name: Build Docker image
         run: |
-          docker build -t loan-calculator .
+          docker-compose -f docker-compose.yml build
 
       # Step 4: Log in to DockerHub
       - name: Log in to DockerHub
@@ -35,8 +35,7 @@ jobs:
       # Step 5: Push Docker image to DockerHub
       - name: Push Docker image to DockerHub
         run: |
-          docker tag loan-calculator otizaaa/loan-calculator:latest
-          docker push otizaaa/loan-calculator:latest
+          docker-compose push
 
       # Step 6: Deploy to Render
       - name: Deploy to Render
@@ -45,41 +44,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -d '{"serviceId": "your-render-service-id"}'
 
-      # Step 7: Create Docker network
-      - name: Create Docker network
+      # Step 7: Run Docker containers using Docker Compose
+      - name: Run Docker containers
         run: |
-          docker network create loan-calculator-network || echo "Network already exists"
-
-      # Step 8: Run Docker container for backend1
-      - name: Run Docker container backend1
-        run: |
-          docker run -d \
-            --network loan-calculator-network \
-            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            -p 9500:9500 \
-            --name backend1 \
-            loan-calculator
-
-      # Step 9: Run Docker container for backend2
-      - name: Run Docker container backend2
-        run: |
-          docker run -d \
-            --network loan-calculator-network \
-            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-            -p 9501:9500 \
-            --name backend2 \
-            loan-calculator
-
-      # Step 10: Run Docker container for NGINX
-      - name: Run Docker container for NGINX
-        run: |
-          docker run -d \
-            --network loan-calculator-network \
-            -p 80:80 \
-            --name nginx \
-            nginx:alpine
-
+          docker-compose up -d

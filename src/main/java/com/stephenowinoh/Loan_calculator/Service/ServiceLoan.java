@@ -99,12 +99,21 @@ public class ServiceLoan implements IServiceLoan {
                 Loan existingLoan = loanRepository.findById(id)
                         .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
 
+                // Debugging log for repayment frequency
+                System.out.println("Repayment Frequency from DTO: " + loanDto.getRepaymentFrequency());
+
+                try {
+                        // Ensure the repayment frequency is being passed correctly and converted to the enum
+                        existingLoan.setRepaymentFrequency(
+                                RepaymentFrequency.fromDisplayName(loanDto.getRepaymentFrequency()) // This should correctly return an enum now
+                        );
+                } catch (IllegalArgumentException e) {
+                        throw new IllegalStateException("Invalid repayment frequency: " + loanDto.getRepaymentFrequency(), e);
+                }
+
                 existingLoan.setAmount(loanDto.getAmount());
                 existingLoan.setTotalInterest(loanDto.getTotalInterest());
                 existingLoan.setTotalRepayment(loanDto.getTotalRepayment());
-                existingLoan.setRepaymentFrequency(
-                        RepaymentFrequency.fromDisplayName(loanDto.getRepaymentFrequency()) // Handling enum conversion
-                );
                 existingLoan.setDueDate(loanDto.getDueDate());
                 existingLoan.setLoanTerm(loanDto.getLoanTerm());
                 existingLoan.setPurpose(loanDto.getPurpose());
@@ -112,6 +121,7 @@ public class ServiceLoan implements IServiceLoan {
                 Loan updatedLoan = loanRepository.save(existingLoan);
                 return LoanMapper.toDto(updatedLoan);
         }
+
 
         @Override
         public void deleteLoan(Long id) {

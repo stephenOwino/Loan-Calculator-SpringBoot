@@ -16,7 +16,7 @@ public class LoanDTO {
         private BigDecimal amount;
         private BigDecimal totalInterest;
         private BigDecimal totalRepayment;
-        private RepaymentFrequency repaymentFrequency;
+        private RepaymentFrequency repaymentFrequency; // This should stay as RepaymentFrequency
         private LocalDateTime createdAt;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
@@ -28,7 +28,6 @@ public class LoanDTO {
         private BigDecimal interestRate;
 
         // Getters and Setters
-
         public Long getId() {
                 return id;
         }
@@ -70,11 +69,11 @@ public class LoanDTO {
         }
 
         public String getRepaymentFrequency() {
-                return repaymentFrequency;
+                return repaymentFrequency; // Corrected to return RepaymentFrequency type
         }
 
         public void setRepaymentFrequency(RepaymentFrequency repaymentFrequency) {
-                this.repaymentFrequency = repaymentFrequency;
+                this.repaymentFrequency = repaymentFrequency; // Corrected setter
         }
 
         public LocalDateTime getCreatedAt() {
@@ -148,7 +147,4 @@ public class LoanDTO {
         public void setInterestRate(BigDecimal interestRate) {
                 this.interestRate = interestRate;
         }
-
-
-        // ...existing code...
 }
