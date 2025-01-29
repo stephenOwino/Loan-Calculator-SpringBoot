@@ -1,5 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
+import com.stephenowinoh.Loan_calculator.Role.Role;
+
 public class CustomerResponseDto {
 
         private Long id;
@@ -8,23 +10,24 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
-        private String role; // Added role field
+        private String role; // Added role field as String
 
-        // Constructor, Getters, and Setters...
-
+        // Default constructor
         public CustomerResponseDto() {
         }
 
-        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String role) {
+        // Constructor with parameters, converting Role enum to String
+        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, Role role) {
                 this.id = id;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.username = username;
                 this.email = email;
                 this.createdAt = createdAt;
-                this.role = role; // Initialize role
+                this.role = role.name(); // Convert Role enum to String
         }
 
+        // Getters and setters
         public Long getId() {
                 return id;
         }
@@ -74,10 +77,10 @@ public class CustomerResponseDto {
         }
 
         public String getRole() {
-                return role; // Added getter for role
+                return role; // Getter for role
         }
 
         public void setRole(String role) {
-                this.role = role; // Added setter for role
+                this.role = role; // Setter for role
         }
 }
