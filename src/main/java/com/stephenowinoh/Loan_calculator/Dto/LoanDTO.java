@@ -12,22 +12,24 @@ import java.time.LocalDateTime;
 @Setter
 public class LoanDTO {
         private Long id;
-        private Long customerId; // Instead of fullName, email, phoneNumber, just reference customer ID
+        private Long customerId;
         private BigDecimal amount;
         private BigDecimal totalInterest;
         private BigDecimal totalRepayment;
-        private RepaymentFrequency repaymentFrequency; // This should stay as RepaymentFrequency
+        private String repaymentFrequency; // Updated to String for display purposes
         private LocalDateTime createdAt;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
-        private int loanTerm; // Loan term in months
+        private int loanTerm;
         private LocalDateTime dueDate;
         private String purpose;
         private LoanStatus status;
         private LocalDateTime paymentDate;
         private BigDecimal interestRate;
 
-        // Getters and Setters
+        // Getters and Setters...
+
+
         public Long getId() {
                 return id;
         }
@@ -68,12 +70,12 @@ public class LoanDTO {
                 this.totalRepayment = totalRepayment;
         }
 
-        public RepaymentFrequency getRepaymentFrequency() {
-                return repaymentFrequency; // Corrected to return RepaymentFrequency type
+        public String getRepaymentFrequency() {
+                return repaymentFrequency;
         }
 
-        public void setRepaymentFrequency(RepaymentFrequency repaymentFrequency) {
-                this.repaymentFrequency = repaymentFrequency; // Corrected setter
+        public void setRepaymentFrequency(String repaymentFrequency) {
+                this.repaymentFrequency = repaymentFrequency;
         }
 
         public LocalDateTime getCreatedAt() {

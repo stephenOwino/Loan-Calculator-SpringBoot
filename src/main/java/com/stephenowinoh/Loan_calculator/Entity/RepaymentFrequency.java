@@ -1,9 +1,8 @@
 package com.stephenowinoh.Loan_calculator.Entity;
 
 public enum RepaymentFrequency {
-        DAILY("Daily"),
-        WEEKLY("Weekly"),
         MONTHLY("Monthly"),
+        WEEKLY("Weekly"),
         YEARLY("Yearly");
 
         private String displayName;
@@ -16,12 +15,12 @@ public enum RepaymentFrequency {
                 return displayName;
         }
 
-        public static RepaymentFrequency fromDisplayName(String name) {
+        public static RepaymentFrequency fromDisplayName(String displayName) {
                 for (RepaymentFrequency frequency : values()) {
-                        if (frequency.name().equalsIgnoreCase(name)) {
+                        if (frequency.getDisplayName().equalsIgnoreCase(displayName)) {
                                 return frequency;
                         }
                 }
-                return null;  // or handle this case appropriately
+                throw new IllegalArgumentException("Invalid repayment frequency: " + displayName);
         }
 }

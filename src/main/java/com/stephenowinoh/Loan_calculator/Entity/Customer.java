@@ -62,6 +62,9 @@ public class Customer implements UserDetails {
                 this.role = role;
         }
 
+        public Customer(Long customerId) {
+        }
+
         public Long getId() {
                 return id;
         }

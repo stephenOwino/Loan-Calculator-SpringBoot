@@ -103,9 +103,8 @@ public class ServiceLoan implements IServiceLoan {
                 System.out.println("Repayment Frequency from DTO: " + loanDto.getRepaymentFrequency());
 
                 try {
-                        // Ensure the repayment frequency is being passed correctly and converted to the enum
                         existingLoan.setRepaymentFrequency(
-                                RepaymentFrequency.fromDisplayName(loanDto.getRepaymentFrequency()) // This should correctly return an enum now
+                                RepaymentFrequency.fromDisplayName(loanDto.getRepaymentFrequency()) // Fixed: Convert String to Enum using display name
                         );
                 } catch (IllegalArgumentException e) {
                         throw new IllegalStateException("Invalid repayment frequency: " + loanDto.getRepaymentFrequency(), e);
@@ -121,7 +120,6 @@ public class ServiceLoan implements IServiceLoan {
                 Loan updatedLoan = loanRepository.save(existingLoan);
                 return LoanMapper.toDto(updatedLoan);
         }
-
 
         @Override
         public void deleteLoan(Long id) {

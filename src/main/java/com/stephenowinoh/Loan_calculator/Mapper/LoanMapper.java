@@ -1,57 +1,62 @@
 package com.stephenowinoh.Loan_calculator.Mapper;
 
 import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
+import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
 
 public class LoanMapper {
 
-        // Method to convert LoanDTO to Loan entity
-        public static Loan toEntity(LoanDTO loanDto) {
-                if (loanDto == null) {
-                        return null;
-                }
+        public static LoanDTO toDto(Loan loan) {
+                LoanDTO loanDTO = new LoanDTO();
+                loanDTO.setId(loan.getId());
+                loanDTO.setCustomerId(loan.getCustomer().getId());
+                loanDTO.setAmount(loan.getAmount());
+                loanDTO.setTotalInterest(loan.getTotalInterest());
+                loanDTO.setTotalRepayment(loan.getTotalRepayment());
 
-                Loan loan = new Loan();
-                loan.setId(loanDto.getId());
-                loan.setAmount(loanDto.getAmount());
-                loan.setTotalInterest(loanDto.getTotalInterest());
-                loan.setTotalRepayment(loanDto.getTotalRepayment());
-                loan.setRepaymentFrequency(loanDto.getRepaymentFrequency());
-                loan.setCreatedAt(loanDto.getCreatedAt());
-                loan.setStartDate(loanDto.getStartDate());
-                loan.setEndDate(loanDto.getEndDate());
-                loan.setLoanTerm(loanDto.getLoanTerm());
-                loan.setDueDate(loanDto.getDueDate());
-                loan.setPurpose(loanDto.getPurpose());
-                loan.setStatus(loanDto.getStatus());
-                loan.setPaymentDate(loanDto.getPaymentDate());
-                loan.setInterestRate(loanDto.getInterestRate());
+                // Directly map enum (no need for conversion to String)
+                loanDTO.setRepaymentFrequency(loan.getRepaymentFrequency().name());
 
-                return loan;
+                loanDTO.setCreatedAt(loan.getCreatedAt());
+                loanDTO.setStartDate(loan.getStartDate());
+                loanDTO.setEndDate(loan.getEndDate());
+                loanDTO.setLoanTerm(loan.getLoanTerm());
+                loanDTO.setDueDate(loan.getDueDate());
+                loanDTO.setPurpose(loan.getPurpose());
+                loanDTO.setStatus(loan.getStatus());
+                loanDTO.setPaymentDate(loan.getPaymentDate());
+                loanDTO.setInterestRate(loan.getInterestRate());
+                return loanDTO;
         }
 
-        // ✅  THIS METHOD TO FIX THE ERROR
-        public static LoanDTO toDto(Loan loan) {
-                if (loan == null) {
-                        return null;
-                }
+        public static Loan toEntity(LoanDTO loanDTO) {
+                Loan loan = new Loan();
+                loan.setId(loanDTO.getId());
 
-                LoanDTO loanDto = new LoanDTO();
-                loanDto.setId(loan.getId());
-                loanDto.setAmount(loan.getAmount());
-                loanDto.setTotalInterest(loan.getTotalInterest());
-                loanDto.setTotalRepayment(loan.getTotalRepayment());
-                loanDto.setRepaymentFrequency(loan.getRepaymentFrequency());
-                loanDto.setCreatedAt(loan.getCreatedAt());
-                loanDto.setStartDate(loan.getStartDate());
-                loanDto.setEndDate(loan.getEndDate());
-                loanDto.setLoanTerm(loan.getLoanTerm());
-                loanDto.setDueDate(loan.getDueDate());
-                loanDto.setPurpose(loan.getPurpose());
-                loanDto.setStatus(loan.getStatus());
-                loanDto.setPaymentDate(loan.getPaymentDate());
-                loanDto.setInterestRate(loan.getInterestRate());
+                // Fetch customer based on customerId from your database or service
+                Customer customer = new Customer();
+                customer.setId(loanDTO.getCustomerId()); // In a real-world scenario, fetch customer from DB.
+                loan.setCustomer(customer);
 
-                return loanDto;
+                loan.setAmount(loanDTO.getAmount());
+                loan.setTotalInterest(loanDTO.getTotalInterest());
+                loan.setTotalRepayment(loanDTO.getTotalRepayment());
+
+                // Convert repaymentFrequency from String to enum
+                RepaymentFrequency repaymentFrequency = RepaymentFrequency.valueOf(loanDTO.getRepaymentFrequency());
+                loan.setRepaymentFrequency(repaymentFrequency);
+
+                loan.setCreatedAt(loanDTO.getCreatedAt());
+                loan.setStartDate(loanDTO.getStartDate());
+                loan.setEndDate(loanDTO.getEndDate());
+                loan.setLoanTerm(loanDTO.getLoanTerm());
+                loan.setDueDate(loanDTO.getDueDate());
+                loan.setPurpose(loanDTO.getPurpose());
+                loan.setStatus(loanDTO.getStatus());
+                loan.setPaymentDate(loanDTO.getPaymentDate());
+                loan.setInterestRate(loanDTO.getInterestRate());
+
+                return loan;
         }
 }
