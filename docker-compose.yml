@@ -5,9 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
     ports:
-      - "9500:9500"
+      - "9500:9500"  # Exposing backend1 on port 9500
     networks:
       - loan-calculator-network
 
@@ -15,9 +14,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
     ports:
-      - "9501:9500"
+      - "9501:9500"  # Exposing backend2 on port 9501 (internal port 9500)
     networks:
       - loan-calculator-network
 
@@ -26,7 +24,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "80:80"
+      - "80:80"  # Expose Nginx to the host's port 80
     networks:
       - loan-calculator-network
 
