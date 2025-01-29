@@ -1,6 +1,7 @@
 package com.stephenowinoh.Loan_calculator.Security;
 
 import com.stephenowinoh.Loan_calculator.Jwt.JwtAuthenticationFilter;
+import com.stephenowinoh.Loan_calculator.Role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-        public class SecurityConfiguration {
+public class SecurityConfiguration {
 
         @Autowired
         private CustomerDetailService customerDetailService;
@@ -50,11 +52,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http.csrf(csrf -> csrf.disable())
+                http.csrf(AbstractHttpConfigurer::disable)
                         .cors(Customizer.withDefaults()) // Use the default CORS configuration
                         .authorizeHttpRequests(auth -> auth
+                                // Allow unauthenticated access to registration and authentication endpoints
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
-                                .anyRequest().authenticated())
+                                // Role-based access for different endpoints
+                                .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name()) // Admin-only endpoints
+                                .requestMatchers("/api/customer/**").hasAuthority(Role.CUSTOMER.name()) // Customer-only endpoints
+                                .anyRequest().authenticated()) // Default authentication for other routes
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -63,14 +69,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration config = new CorsConfiguration();
-                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Ensure this matches your React app URL
-                config.addAllowedMethod("GET");
-                config.addAllowedMethod("POST");
-                config.addAllowedMethod("PUT");
-                config.addAllowedMethod("DELETE");
-                config.addAllowedHeader("*");  // Allow all headers, including 'Authorization'
-                config.addAllowedHeader("Authorization");
+                CorsConfiguration config = getCorsConfiguration();
                 config.setAllowCredentials(true);
                 config.setMaxAge(3600L);
 
@@ -80,5 +79,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                 return source;
         }
 
-
+        private static CorsConfiguration getCorsConfiguration() {
+                CorsConfiguration config = new CorsConfiguration();
+                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Ensure this matches your React app URL
+                config.addAllowedMethod("GET");
+                config.addAllowedMethod("POST");
+                config.addAllowedMethod("PUT");
+                config.addAllowedMethod("DELETE");
+                config.addAllowedHeader("*");  // Allow all headers, including 'Authorization'
+                config.addAllowedHeader("Authorization");
+                return config;
+        }
 }

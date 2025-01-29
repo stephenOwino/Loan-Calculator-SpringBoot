@@ -1,21 +1,22 @@
 package com.stephenowinoh.Loan_calculator.Service;
 
 
-import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface IServiceLoan {
 
-        LoanDto createLoan(LoanDto loanDto, String username);
 
-        LoanDto getLoanById(Long id);
-        List<LoanDto> getAllLoans();
-        LoanDto updateLoan(Long id, LoanDto loanDto);
+        LoanDTO createLoan(LoanDTO loanDto, String username);
+
+        LoanDTO getLoanById(Long id);
+        List<LoanDTO> getAllLoans();
+        LoanDTO updateLoan(Long id, LoanDTO loanDto);
         void deleteLoan(Long id);
         String generateLoanStatement(Long loanId);
 
-        Page<LoanDto> getAllLoans(int page, int size, String sortBy, String sortDir);
+        Page<LoanDTO> getAllLoans(int page, int size, String sortBy, String sortDir);
 }
 

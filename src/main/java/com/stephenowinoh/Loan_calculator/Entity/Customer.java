@@ -1,14 +1,20 @@
 
 package com.stephenowinoh.Loan_calculator.Entity;
 
+import com.stephenowinoh.Loan_calculator.Role.Role;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "customers")
-public class Customer {
+public class Customer implements UserDetails {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,13 +41,16 @@ public class Customer {
         @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Loan> loans = new ArrayList<>();
 
-        // Getters and setters...
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private Role role;
 
+        // Getters and setters...
 
         public Customer() {
         }
 
-        public Customer(Long id, String firstName, String lastName, String username, String email, String password, LocalDateTime createdAt, List<Loan> loans) {
+        public Customer(Long id, String firstName, String lastName, String username, String email, String password, LocalDateTime createdAt, List<Loan> loans, Role role) {
                 this.id = id;
                 this.firstName = firstName;
                 this.lastName = lastName;
@@ -50,6 +59,7 @@ public class Customer {
                 this.password = password;
                 this.createdAt = createdAt;
                 this.loans = loans;
+                this.role = role;
         }
 
         public Long getId() {
@@ -115,5 +125,38 @@ public class Customer {
         public void setLoans(List<Loan> loans) {
                 this.loans = loans;
         }
-}
 
+        public Role getRole() {
+                return role;
+        }
+
+        public void setRole(Role role) {
+                this.role = role;
+        }
+
+        // UserDetails interface methods
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+                return List.of((GrantedAuthority) () -> "ROLE_" + role.name());
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+                return true;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+                return true;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+                return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+                return true;
+        }
+}

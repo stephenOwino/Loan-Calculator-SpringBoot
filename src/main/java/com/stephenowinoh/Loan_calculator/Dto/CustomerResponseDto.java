@@ -1,7 +1,5 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
-
-
 public class CustomerResponseDto {
 
         private Long id;
@@ -10,20 +8,21 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
+        private String role; // Added role field
 
         // Constructor, Getters, and Setters...
-
 
         public CustomerResponseDto() {
         }
 
-        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt) {
+        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String role) {
                 this.id = id;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.username = username;
                 this.email = email;
                 this.createdAt = createdAt;
+                this.role = role; // Initialize role
         }
 
         public Long getId() {
@@ -72,5 +71,13 @@ public class CustomerResponseDto {
 
         public void setCreatedAt(String createdAt) {
                 this.createdAt = createdAt;
+        }
+
+        public String getRole() {
+                return role; // Added getter for role
+        }
+
+        public void setRole(String role) {
+                this.role = role; // Added setter for role
         }
 }

@@ -1,12 +1,12 @@
 package com.stephenowinoh.Loan_calculator.Controller;
 
-
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Exception.BadRequestException;
 import com.stephenowinoh.Loan_calculator.Jwt.JWTService;
 import com.stephenowinoh.Loan_calculator.Jwt.JwtPayloadDTO;
+import com.stephenowinoh.Loan_calculator.Role.Role;
 import com.stephenowinoh.Loan_calculator.Service.ICustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class CustomerController {
 
         private final ICustomerService customerService;
         private final AuthenticationManager authenticationManager;
-        private final JWTService jwtService;  // Inject JWTService
+        private final JWTService jwtService;
 
         @Autowired
         public CustomerController(ICustomerService customerService, AuthenticationManager authenticationManager, JWTService jwtService) {
@@ -36,12 +36,14 @@ public class CustomerController {
                 this.jwtService = jwtService;
         }
 
+        // Register customer and assign roles (USER/ADMIN)
         @PostMapping("/register")
         public ResponseEntity<CustomerResponseDto> registerCustomer(@Valid @RequestBody CustomerDto customerDto) {
                 Optional<Customer> existingCustomer = customerService.findByUsername(customerDto.getUsername());
                 if (existingCustomer.isPresent()) {
                         throw new BadRequestException("Username already exists");
                 }
+
                 CustomerResponseDto responseDto = customerService.registerCustomer(customerDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
         }
@@ -67,16 +69,22 @@ public class CustomerController {
                                 if (customer.isPresent()) {
                                         // Populate JwtPayloadDTO with user details
                                         Customer user = customer.get();
+
+                                        // Get the role and wrap it in a list
+                                        List<Role> roles = List.of(user.getRole());  // Wrap the single role in a list
+
+                                        // Generate JWT token
                                         JwtPayloadDTO payloadDTO = new JwtPayloadDTO(
                                                 user.getId(),
                                                 user.getUsername(),
                                                 user.getFirstName(),
                                                 user.getLastName(),
-                                                null // We'll populate the token after generating it
+                                                null, // Token will be populated after generation
+                                                roles // Pass roles as a list of Role enums
                                         );
 
-                                        // Generate JWT token using the populated payloadDTO
-                                        String jwtToken = jwtService.generateToken(payloadDTO); // Generate the token
+                                        // Generate JWT token
+                                        String jwtToken = jwtService.generateToken(payloadDTO);
 
                                         // Set the token in the payloadDTO
                                         payloadDTO.setToken(jwtToken);
@@ -92,23 +100,24 @@ public class CustomerController {
                 } catch (BadCredentialsException e) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
                 }
-
         }
+
+
+        // Get customer by ID
         @GetMapping("/{id}")
         public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long id) {
                 Optional<CustomerResponseDto> customerResponseDto = customerService.getCustomerDetails(id);
                 return customerResponseDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         }
 
-
-        // Endpoint to update customer details
+        // Update customer details
         @PutMapping("/{id}")
         public ResponseEntity<CustomerResponseDto> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
                 Optional<CustomerResponseDto> updatedCustomer = customerService.updateCustomer(id, customerDto);
                 return updatedCustomer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         }
 
-        // Endpoint to delete a customer
+        // Delete customer
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
                 try {
@@ -119,12 +128,10 @@ public class CustomerController {
                 }
         }
 
-        // Endpoint to list all customers
+        // Get all customers
         @GetMapping
         public ResponseEntity<List<CustomerResponseDto>> getAllCustomers() {
                 List<CustomerResponseDto> customers = customerService.getAllCustomers();
                 return ResponseEntity.ok(customers);
         }
-
-
 }

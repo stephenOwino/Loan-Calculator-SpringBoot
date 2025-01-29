@@ -1,15 +1,12 @@
 package com.stephenowinoh.Loan_calculator.Security;
 
+import com.stephenowinoh.Loan_calculator.Entity.Customer;
+import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;  // Use CustomerDto
-import com.stephenowinoh.Loan_calculator.Entity.Customer;   // The entity for persistence
-import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository; // Assuming you have a CustomerRepository
 
 import java.util.Optional;
 
@@ -19,39 +16,24 @@ public class CustomerDetailService implements UserDetailsService {
         @Autowired
         private CustomerRepository repository;
 
-        public CustomerDetailService(Optional<Customer> customer) {
-        }
-
         @Override
         public UserDetails loadUserByUsername(String username) {
                 // Fetch the customer from the repository
                 Optional<Customer> customerOptional = repository.findByUsername(username);
 
-                // Check if customer is present
-                if (customerOptional.isPresent()) {
-                        // Extract customer entity and convert to DTO
-                        CustomerDto customerDto = mapToCustomerDto(customerOptional.get());
-
-                        // Return the UserDetails object with DTO data
-                        return User.builder()
-                                .username(customerDto.getUsername())
-                                .password(customerDto.getPassword())
-                                .build();
-                } else {
-                        // If no customer found with the given username, throw exception
+                // Check if customer exists
+                if (customerOptional.isEmpty()) {
                         throw new UsernameNotFoundException("User not found with username: " + username);
                 }
-        }
 
-        // Helper method to map Customer entity to CustomerDto
-        private CustomerDto mapToCustomerDto(Customer customer) {
-                return new CustomerDto(
-                        customer.getFirstName(),
-                        customer.getLastName(),
-                        customer.getUsername(),
-                        customer.getEmail(),
-                        customer.getPassword(),
-                        null  // 'confirmPassword' is not necessary for login
-                );
+                // Return the Customer entity as UserDetails
+                Customer customer = customerOptional.get();
+
+                // Validate roles (this will automatically handle authorities in Spring Security)
+                if (customer.getAuthorities().isEmpty()) {
+                        throw new UsernameNotFoundException("User has no roles assigned: " + username);
+                }
+
+                return customer;
         }
 }

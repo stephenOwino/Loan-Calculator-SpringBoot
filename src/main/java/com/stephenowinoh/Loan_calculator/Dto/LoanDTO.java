@@ -1,27 +1,33 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
+import com.stephenowinoh.Loan_calculator.Entity.Loan.LoanStatus;
+import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class LoanDto {
-
+@Getter
+@Setter
+public class LoanDTO {
         private Long id;
-        private Long customerId;
-        private String fullName;
-        private String email;
-        private String phoneNumber;
+        private Long customerId; // Instead of fullName, email, phoneNumber, just reference customer ID
         private BigDecimal amount;
         private BigDecimal totalInterest;
         private BigDecimal totalRepayment;
-        private String repaymentFrequency;
+        private RepaymentFrequency repaymentFrequency;
         private LocalDateTime createdAt;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
-        private int loanTerm;
+        private int loanTerm; // Loan term in months
         private LocalDateTime dueDate;
-        private String purpose; // New field for the purpose of the loan
+        private String purpose;
+        private LoanStatus status;
+        private LocalDateTime paymentDate;
+        private BigDecimal interestRate;
 
-        // Getters and setters...
+        // Getters and Setters
 
         public Long getId() {
                 return id;
@@ -37,30 +43,6 @@ public class LoanDto {
 
         public void setCustomerId(Long customerId) {
                 this.customerId = customerId;
-        }
-
-        public String getFullName() {
-                return fullName;
-        }
-
-        public void setFullName(String fullName) {
-                this.fullName = fullName;
-        }
-
-        public String getEmail() {
-                return email;
-        }
-
-        public void setEmail(String email) {
-                this.email = email;
-        }
-
-        public String getPhoneNumber() {
-                return phoneNumber;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-                this.phoneNumber = phoneNumber;
         }
 
         public BigDecimal getAmount() {
@@ -91,7 +73,7 @@ public class LoanDto {
                 return repaymentFrequency;
         }
 
-        public void setRepaymentFrequency(String repaymentFrequency) {
+        public void setRepaymentFrequency(RepaymentFrequency repaymentFrequency) {
                 this.repaymentFrequency = repaymentFrequency;
         }
 
@@ -142,4 +124,31 @@ public class LoanDto {
         public void setPurpose(String purpose) {
                 this.purpose = purpose;
         }
+
+        public LoanStatus getStatus() {
+                return status;
+        }
+
+        public void setStatus(LoanStatus status) {
+                this.status = status;
+        }
+
+        public LocalDateTime getPaymentDate() {
+                return paymentDate;
+        }
+
+        public void setPaymentDate(LocalDateTime paymentDate) {
+                this.paymentDate = paymentDate;
+        }
+
+        public BigDecimal getInterestRate() {
+                return interestRate;
+        }
+
+        public void setInterestRate(BigDecimal interestRate) {
+                this.interestRate = interestRate;
+        }
+
+
+        // ...existing code...
 }

@@ -2,12 +2,16 @@ package com.stephenowinoh.Loan_calculator.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "loans")
 public class Loan {
 
@@ -15,14 +19,9 @@ public class Loan {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(nullable = false)
-        private String fullName;
-
-        @Column(nullable = false)
-        private String email;
-
-        @Column(nullable = false)
-        private String phoneNumber;
+        @ManyToOne
+        @JoinColumn(name = "customer_id", nullable = false)
+        private Customer customer;
 
         @Column(nullable = false)
         @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.")
@@ -38,6 +37,7 @@ public class Loan {
         @Column(nullable = false)
         private RepaymentFrequency repaymentFrequency;
 
+        @CreationTimestamp
         @Column(nullable = false, updatable = false)
         private LocalDateTime createdAt;
 
@@ -48,11 +48,7 @@ public class Loan {
         private LocalDateTime endDate;
 
         @Column(nullable = false)
-        private int loanTerm; // Loan term in years
-
-        @ManyToOne
-        @JoinColumn(name = "customer_id", nullable = false)
-        private Customer customer;
+        private int loanTerm; // Loan term in months
 
         @OneToOne(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
         private RepaymentPlan repaymentPlan;
@@ -61,12 +57,19 @@ public class Loan {
         private LocalDateTime dueDate;
 
         @Column(nullable = false)
-        private String purpose; // New field for the purpose of the loan
+        private String purpose;
 
-        public Loan() {
-        }
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private LoanStatus status;
 
-        // Getters and setters for all fields
+        @Column(nullable = true)
+        private LocalDateTime paymentDate;
+
+        @Column(nullable = false)
+        private BigDecimal interestRate;
+
+        // Getters and Setters
 
         public Long getId() {
                 return id;
@@ -76,35 +79,19 @@ public class Loan {
                 this.id = id;
         }
 
-        public String getFullName() {
-                return fullName;
+        public Customer getCustomer() {
+                return customer;
         }
 
-        public void setFullName(String fullName) {
-                this.fullName = fullName;
+        public void setCustomer(Customer customer) {
+                this.customer = customer;
         }
 
-        public String getEmail() {
-                return email;
-        }
-
-        public void setEmail(String email) {
-                this.email = email;
-        }
-
-        public String getPhoneNumber() {
-                return phoneNumber;
-        }
-
-        public void setPhoneNumber(String phoneNumber) {
-                this.phoneNumber = phoneNumber;
-        }
-
-        public BigDecimal getAmount() {
+        public @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal getAmount() {
                 return amount;
         }
 
-        public void setAmount(BigDecimal amount) {
+        public void setAmount(@DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal amount) {
                 this.amount = amount;
         }
 
@@ -164,14 +151,6 @@ public class Loan {
                 this.loanTerm = loanTerm;
         }
 
-        public Customer getCustomer() {
-                return customer;
-        }
-
-        public void setCustomer(Customer customer) {
-                this.customer = customer;
-        }
-
         public RepaymentPlan getRepaymentPlan() {
                 return repaymentPlan;
         }
@@ -196,25 +175,44 @@ public class Loan {
                 this.purpose = purpose;
         }
 
+        public LoanStatus getStatus() {
+                return status;
+        }
+
+        public void setStatus(LoanStatus status) {
+                this.status = status;
+        }
+
+        public LocalDateTime getPaymentDate() {
+                return paymentDate;
+        }
+
+        public void setPaymentDate(LocalDateTime paymentDate) {
+                this.paymentDate = paymentDate;
+        }
+
+        public BigDecimal getInterestRate() {
+                return interestRate;
+        }
+
+        public void setInterestRate(BigDecimal interestRate) {
+                this.interestRate = interestRate;
+        }
+
+        // ...existing code...
+
         @PrePersist
         protected void onCreate() {
-                this.createdAt = LocalDateTime.now();
-                this.startDate = this.createdAt;
-                this.endDate = this.startDate.plusYears(this.loanTerm); // Set endDate based on loan term
-                this.dueDate = this.endDate; // Assuming dueDate is the same as endDate
+                this.startDate = (this.startDate != null) ? this.startDate : LocalDateTime.now();
+                this.endDate = this.startDate.plusMonths(this.loanTerm);
+                this.dueDate = this.endDate;
+                this.status = LoanStatus.PENDING;
         }
 
-        public long getRemainingTimeInSeconds() {
-                return ChronoUnit.SECONDS.between(LocalDateTime.now(), this.dueDate);
-        }
-
-        public String getFormattedRemainingTime() {
-                long remainingTime = getRemainingTimeInSeconds();
-                long days = remainingTime / (24 * 3600);
-                long hours = (remainingTime % (24 * 3600)) / 3600;
-                long minutes = (remainingTime % 3600) / 60;
-                long seconds = remainingTime % 60;
-
-                return String.format("%d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds);
+        public enum LoanStatus {
+                PENDING,
+                APPROVED,
+                REJECTED,
+                COMPLETED
         }
 }

@@ -1,6 +1,6 @@
 package com.stephenowinoh.Loan_calculator.Service;
 
-import com.stephenowinoh.Loan_calculator.Dto.LoanDto;
+import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
 import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
@@ -32,7 +32,7 @@ public class ServiceLoan implements IServiceLoan {
         }
 
         @Override
-        public LoanDto createLoan(LoanDto loanDto, String username) {
+        public LoanDTO createLoan(LoanDTO loanDto, String username) {
                 Customer customer = customerRepository.findByUsername(username)
                         .orElseThrow(() -> new CustomerNotFoundException("Customer not found with username: " + username));
 
@@ -49,10 +49,8 @@ public class ServiceLoan implements IServiceLoan {
 
                 // Implement business logic for partial repayments
                 if (activeLoans.size() == 1) {
-                        // If the customer has one active loan, allow a second loan with the same amount
                         totalRepayment = loanDto.getAmount().add(totalInterest);
                 } else if (activeLoans.size() == 2) {
-                        // If the customer has two active loans, allow a third loan with half the amount
                         totalRepayment = loanDto.getAmount().divide(BigDecimal.valueOf(2)).add(totalInterest);
                 }
 
@@ -61,7 +59,7 @@ public class ServiceLoan implements IServiceLoan {
                 loan.setTotalInterest(totalInterest);
                 loan.setTotalRepayment(totalRepayment);
                 loan.setStartDate(LocalDateTime.now());
-                loan.setEndDate(loan.getStartDate().plusYears(loan.getLoanTerm())); // Set endDate based on loan term
+                loan.setEndDate(loan.getStartDate().plusMonths(loan.getLoanTerm())); // Set endDate based on loan term
                 loan.setDueDate(loan.getEndDate()); // Assuming dueDate is the same as endDate
                 loan.setPurpose(loanDto.getPurpose()); // Set the purpose field
                 Loan savedLoan = loanRepository.save(loan);
@@ -82,14 +80,14 @@ public class ServiceLoan implements IServiceLoan {
         }
 
         @Override
-        public LoanDto getLoanById(Long id) {
+        public LoanDTO getLoanById(Long id) {
                 Loan loan = loanRepository.findById(id)
                         .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
                 return LoanMapper.toDto(loan);
         }
 
         @Override
-        public List<LoanDto> getAllLoans() {
+        public List<LoanDTO> getAllLoans() {
                 return loanRepository.findAll()
                         .stream()
                         .map(LoanMapper::toDto)
@@ -97,21 +95,19 @@ public class ServiceLoan implements IServiceLoan {
         }
 
         @Override
-        public LoanDto updateLoan(Long id, LoanDto loanDto) {
+        public LoanDTO updateLoan(Long id, LoanDTO loanDto) {
                 Loan existingLoan = loanRepository.findById(id)
                         .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
 
-                existingLoan.setFullName(loanDto.getFullName());
-                existingLoan.setEmail(loanDto.getEmail());
-                existingLoan.setPhoneNumber(loanDto.getPhoneNumber());
                 existingLoan.setAmount(loanDto.getAmount());
                 existingLoan.setTotalInterest(loanDto.getTotalInterest());
                 existingLoan.setTotalRepayment(loanDto.getTotalRepayment());
                 existingLoan.setRepaymentFrequency(
-                        RepaymentFrequency.valueOf(loanDto.getRepaymentFrequency())
+                        RepaymentFrequency.fromDisplayName(loanDto.getRepaymentFrequency()) // Handling enum conversion
                 );
                 existingLoan.setDueDate(loanDto.getDueDate());
                 existingLoan.setLoanTerm(loanDto.getLoanTerm());
+                existingLoan.setPurpose(loanDto.getPurpose());
 
                 Loan updatedLoan = loanRepository.save(existingLoan);
                 return LoanMapper.toDto(updatedLoan);
@@ -132,11 +128,9 @@ public class ServiceLoan implements IServiceLoan {
 
                 // Simple loan statement generation
                 return String.format(
-                        "Loan Statement:\nLoan ID: %d\nFull Name: %s\nEmail: %s\nPhone Number: %s\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
+                        "Loan Statement:\nLoan ID: %d\nCustomer ID: %d\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
                         loan.getId(),
-                        loan.getFullName(),
-                        loan.getEmail(),
-                        loan.getPhoneNumber(),
+                        loan.getCustomer().getId(),
                         loan.getAmount(),
                         loan.getTotalInterest(),
                         loan.getTotalRepayment(),
@@ -157,11 +151,9 @@ public class ServiceLoan implements IServiceLoan {
 
                 // Simple loan statement generation
                 return String.format(
-                        "Loan Statement:\nLoan ID: %d\nFull Name: %s\nEmail: %s\nPhone Number: %s\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
+                        "Loan Statement:\nLoan ID: %d\nCustomer ID: %d\nAmount: %.2f\nInterest: %.2f\nTotal Repayment: %.2f\nDue Date: %s",
                         loan.getId(),
-                        loan.getFullName(),
-                        loan.getEmail(),
-                        loan.getPhoneNumber(),
+                        loan.getCustomer().getId(),
                         loan.getAmount(),
                         loan.getTotalInterest(),
                         loan.getTotalRepayment(),
@@ -170,7 +162,7 @@ public class ServiceLoan implements IServiceLoan {
         }
 
         @Override
-        public Page<LoanDto> getAllLoans(int page, int size, String sortBy, String sortDir) {
+        public Page<LoanDTO> getAllLoans(int page, int size, String sortBy, String sortDir) {
                 Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
                 Pageable pageable = PageRequest.of(page, size, sort);
                 Page<Loan> loans = loanRepository.findAll(pageable);

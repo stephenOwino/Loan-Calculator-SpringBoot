@@ -5,6 +5,7 @@ import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Mapper.CustomerMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
+import com.stephenowinoh.Loan_calculator.Role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,8 +40,12 @@ public class CustomerService implements ICustomerService {
                         throw new RuntimeException("Username is already taken!");
                 }
 
+                // Set default role to USER if not provided
+                Role role = customerDto.getRole() != null ? customerDto.getRole() : Role.CUSTOMER;
+
                 Customer customer = CustomerMapper.toEntity(customerDto);
                 customer.setPassword(passwordEncoder.encode(customerDto.getPassword())); // Encrypt password
+                customer.setRole(role); // Set role
                 Customer savedCustomer = customerRepository.save(customer);
 
                 return CustomerMapper.toDto(savedCustomer);
@@ -64,6 +69,11 @@ public class CustomerService implements ICustomerService {
 
                         if (customerDto.getPassword() != null && !customerDto.getPassword().isEmpty()) {
                                 customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));  // Encrypt password
+                        }
+
+                        // Update role if provided
+                        if (customerDto.getRole() != null) {
+                                customer.setRole(customerDto.getRole());
                         }
 
                         Customer updatedCustomer = customerRepository.save(customer);
@@ -93,7 +103,7 @@ public class CustomerService implements ICustomerService {
                         return org.springframework.security.core.userdetails.User.builder()
                                 .username(customer.getUsername())
                                 .password(customer.getPassword())
-                                .authorities("USER")
+                                .authorities("ROLE_" + customer.getRole().name())
                                 .build();
                 } else {
                         throw new UsernameNotFoundException("User not found with username: " + username);
