@@ -68,7 +68,7 @@ public class LoanDTO {
                 this.totalRepayment = totalRepayment;
         }
 
-        public String getRepaymentFrequency() {
+        public RepaymentFrequency getRepaymentFrequency() {
                 return repaymentFrequency; // Corrected to return RepaymentFrequency type
         }
 
