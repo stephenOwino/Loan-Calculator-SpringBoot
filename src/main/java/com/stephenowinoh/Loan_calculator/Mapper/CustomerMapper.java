@@ -30,15 +30,15 @@ public class CustomerMapper {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String formattedDate = customer.getCreatedAt().format(formatter);
 
-                // Create CustomerResponseDto using the corrected constructor
+                // Ensure the ID is always a Long (not primitive long)
                 return new CustomerResponseDto(
-                        customer.getId(), // Directly passing the Long value
+                        customer.getId() != null ? customer.getId() : null, // Ensure Long type
                         customer.getFirstName(),
                         customer.getLastName(),
                         customer.getUsername(),
                         customer.getEmail(),
                         formattedDate,
-                        customer.getRole().name() // Converting the Role enum to string for the name field
+                        customer.getRole().name() // Converting the Role enum to a string
                 );
         }
 }

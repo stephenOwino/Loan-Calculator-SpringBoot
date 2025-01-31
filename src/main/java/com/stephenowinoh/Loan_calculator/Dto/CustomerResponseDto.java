@@ -8,9 +8,9 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
-        private String name; // role as a string (instead of enum)
+        private String name; // Role as a string
 
-        // Constructor with role as name field
+        // Constructor
         public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String name) {
                 this.id = id;
                 this.firstName = firstName;
@@ -18,7 +18,7 @@ public class CustomerResponseDto {
                 this.username = username;
                 this.email = email;
                 this.createdAt = createdAt;
-                this.name = name; // role as name
+                this.name = name;
         }
 
         // Getters and setters

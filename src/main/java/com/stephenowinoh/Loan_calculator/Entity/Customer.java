@@ -1,4 +1,3 @@
-
 package com.stephenowinoh.Loan_calculator.Entity;
 
 import com.stephenowinoh.Loan_calculator.Role.Role;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "customers")
@@ -18,7 +16,7 @@ public class Customer implements UserDetails {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        private Long id; // Ensured this is Long
 
         @Column(nullable = false)
         private String firstName;
@@ -45,10 +43,8 @@ public class Customer implements UserDetails {
         @Column(nullable = false)
         private Role role;
 
-        // Getters and setters...
-
-        public Customer() {
-        }
+        // Constructors
+        public Customer() {}
 
         public Customer(Long id, String firstName, String lastName, String username, String email, String password, LocalDateTime createdAt, List<Loan> loans, Role role) {
                 this.id = id;
@@ -63,8 +59,10 @@ public class Customer implements UserDetails {
         }
 
         public Customer(Long customerId) {
+                this.id = customerId; // Fix constructor
         }
 
+        // Getters and setters
         public Long getId() {
                 return id;
         }
