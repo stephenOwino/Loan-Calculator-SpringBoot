@@ -3,7 +3,6 @@ package com.stephenowinoh.Loan_calculator.Mapper;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Role.Role;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -27,14 +26,13 @@ public class CustomerMapper {
         }
 
         // Maps Customer entity to CustomerResponseDto
-        // Maps Customer entity to CustomerResponseDto
         public static CustomerResponseDto toDto(Customer customer) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String formattedDate = customer.getCreatedAt().format(formatter);
 
-                // Create CustomerResponseDto using the new constructor
+                // Create CustomerResponseDto using the corrected constructor
                 return new CustomerResponseDto(
-                        Long.valueOf(customer.getId()), // Ensure it's a Long, not a primitive long
+                        customer.getId(), // Directly passing the Long value
                         customer.getFirstName(),
                         customer.getLastName(),
                         customer.getUsername(),
@@ -43,5 +41,4 @@ public class CustomerMapper {
                         customer.getRole().name() // Converting the Role enum to string for the name field
                 );
         }
-
 }
