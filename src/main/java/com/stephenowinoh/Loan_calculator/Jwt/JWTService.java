@@ -80,7 +80,7 @@ public class JWTService {
         // Helper method to get the signing key (Fixed: Now uses a fixed secret key)
         private SecretKey getKey() {
                 byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-                return Keys.hmacShaKeyFor(keyBytes);
-        }
+                return Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+        }
 }
