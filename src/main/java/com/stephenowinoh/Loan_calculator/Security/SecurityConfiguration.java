@@ -1,7 +1,6 @@
 package com.stephenowinoh.Loan_calculator.Security;
 
 import com.stephenowinoh.Loan_calculator.Jwt.JwtAuthenticationFilter;
-import com.stephenowinoh.Loan_calculator.Role.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,21 +52,21 @@ public class SecurityConfiguration {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
-                        .cors(Customizer.withDefaults()) // Use the default CORS configuration
+                        .cors(Customizer.withDefaults())
                         .authorizeHttpRequests(auth -> auth
-                                // Allow unauthenticated access to registration and authentication endpoints
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
-                                // Role-based access for different endpoints
-                                .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name()) // Admin-only endpoints
-                                .requestMatchers("/api/customer/**").hasAuthority(Role.CUSTOMER.name()) // Customer-only endpoints
-                                .anyRequest().authenticated()) // Default authentication for other routes
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                                .anyRequest().authenticated())
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
         }
 
-        @Bean
+
+
+@Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration config = getCorsConfiguration();
                 config.setAllowCredentials(true);

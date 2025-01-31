@@ -31,8 +31,8 @@ public class JWTService {
                         .setClaims(claims)
                         .setSubject(jwtPayloadDTO.getUsername())
                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                        .setExpiration(new Date(System.currentTimeMillis() + expirationTime))  // Use dynamic expiration time
-                        .signWith(getKey())
+                        .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                        .signWith(getKey(), SignatureAlgorithm.HS256)  // Use a fixed key
                         .compact();
         }
 
@@ -41,9 +41,9 @@ public class JWTService {
                 return extractClaim(token, Claims::getSubject);
         }
 
-        // Extract roles from token
+        // Extract roles from token (Fixed: Now correctly fetching "roles" instead of "token")
         public List<String> extractRoles(String token) {
-                return extractClaim(token, claims -> claims.get("name", List.class));
+                return extractClaim(token, claims -> claims.get("roles", List.class));
         }
 
         // Extract specific claims
@@ -77,9 +77,9 @@ public class JWTService {
                 return extractClaim(token, Claims::getExpiration);
         }
 
-        // Helper method to get the signing key
+        // Helper method to get the signing key (Fixed: Now uses a fixed secret key)
         private SecretKey getKey() {
-                // Ensure the key is generated securely with SignatureAlgorithm.HS256 (256-bit key)
-                return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+                byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+                return Keys.hmacShaKeyFor(keyBytes);
         }
 }
