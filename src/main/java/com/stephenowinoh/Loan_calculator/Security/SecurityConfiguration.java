@@ -1,9 +1,11 @@
 package com.stephenowinoh.Loan_calculator.Security;
 
+import com.stephenowinoh.Loan_calculator.Exception.CustomAccessDeniedHandler;
 import com.stephenowinoh.Loan_calculator.Jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -25,11 +28,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-        @Autowired
-        private CustomerDetailService customerDetailService;
 
-        @Autowired
-        private JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final CustomerDetailService customerDetailService;
+
+
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+        private final CustomAccessDeniedHandler accessDeniedHandler;
+
+        public SecurityConfiguration(CustomerDetailService customerDetailService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomAccessDeniedHandler accessDeniedHandler) {
+                this.customerDetailService = customerDetailService;
+                this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+                this.accessDeniedHandler = accessDeniedHandler;
+        }
 
         @Bean
         public PasswordEncoder passwordEncoder() {
@@ -58,7 +69,10 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers("/api/loans/**").hasAuthority("CUSTOMER")
 
-                                .anyRequest().authenticated())
+                                .anyRequest().authenticated()
+                        ).userDetailsService(customerDetailService)
+                        .exceptionHandling(e ->e.accessDeniedHandler(accessDeniedHandler)
+                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
