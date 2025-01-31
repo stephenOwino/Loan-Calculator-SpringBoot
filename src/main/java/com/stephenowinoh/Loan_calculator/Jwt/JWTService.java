@@ -2,6 +2,7 @@ package com.stephenowinoh.Loan_calculator.Jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +79,7 @@ public class JWTService {
 
         // Helper method to get the signing key
         private SecretKey getKey() {
-                byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-                return Keys.hmacShaKeyFor(keyBytes);
+                // Ensure the key is generated securely with SignatureAlgorithm.HS256 (256-bit key)
+                return Keys.secretKeyFor(SignatureAlgorithm.HS256);
         }
 }
