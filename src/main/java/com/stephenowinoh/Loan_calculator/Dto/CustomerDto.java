@@ -1,5 +1,6 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.stephenowinoh.Loan_calculator.Role.Role;
 
 public class CustomerDto {
@@ -10,6 +11,8 @@ public class CustomerDto {
         private String email;
         private String password;
         private String confirmPassword;
+
+        @JsonProperty("role")  // Ensure it gets serialized as "role" instead of "name"
         private Role role;  // Role field as an enum
 
         // Constructors, getters, and setters...

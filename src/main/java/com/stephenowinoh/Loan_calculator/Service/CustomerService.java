@@ -40,7 +40,7 @@ public class CustomerService implements ICustomerService {
                         throw new RuntimeException("Username is already taken!");
                 }
 
-                // Set default role to USER if not provided
+                // Set default role to CUSTOMER if not provided
                 Role role = customerDto.getRole() != null ? customerDto.getRole() : Role.CUSTOMER;
 
                 Customer customer = CustomerMapper.toEntity(customerDto);
