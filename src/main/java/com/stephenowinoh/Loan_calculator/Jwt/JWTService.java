@@ -43,7 +43,7 @@ public class JWTService {
 
         // Extract roles from token
         public List<String> extractRoles(String token) {
-                return extractClaim(token, claims -> claims.get("roles", List.class));
+                return extractClaim(token, claims -> claims.get("name", List.class));
         }
 
         // Extract specific claims
