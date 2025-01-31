@@ -8,17 +8,17 @@ public class CustomerResponseDto {
         private String username;
         private String email;
         private String createdAt;
-        private String name; // Role as a string
+        private String role;
 
         // Constructor
-        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String name) {
+        public CustomerResponseDto(Long id, String firstName, String lastName, String username, String email, String createdAt, String role) {
                 this.id = id;
                 this.firstName = firstName;
                 this.lastName = lastName;
                 this.username = username;
                 this.email = email;
                 this.createdAt = createdAt;
-                this.name = name;
+                this.role = role;
         }
 
         // Getters and setters
@@ -70,11 +70,11 @@ public class CustomerResponseDto {
                 this.createdAt = createdAt;
         }
 
-        public String getName() {
-                return name;
+        public String getRole() {
+                return role;
         }
 
         public void setName(String name) {
-                this.name = name;
+                this.role = role;
         }
 }
