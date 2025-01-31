@@ -55,8 +55,9 @@ public class SecurityConfiguration {
                         .cors(Customizer.withDefaults())
                         .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/loans/**").hasAuthority("CUSTOMER")
+
                                 .anyRequest().authenticated())
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
