@@ -16,7 +16,7 @@ public class Customer implements UserDetails {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id; // Ensured this is Long
+        private Long id;
 
         @Column(nullable = false)
         private String firstName;
@@ -43,9 +43,10 @@ public class Customer implements UserDetails {
         @Column(nullable = false)
         private Role role;
 
-        // Constructors
+        // Default constructor
         public Customer() {}
 
+        // Constructor with parameters for all fields
         public Customer(Long id, String firstName, String lastName, String username, String email, String password, LocalDateTime createdAt, List<Loan> loans, Role role) {
                 this.id = id;
                 this.firstName = firstName;
@@ -58,8 +59,9 @@ public class Customer implements UserDetails {
                 this.role = role;
         }
 
+        // Constructor with customer ID (for some specific use cases)
         public Customer(Long customerId) {
-                this.id = customerId; // Fix constructor
+                this.id = customerId;
         }
 
         // Getters and setters
@@ -138,7 +140,7 @@ public class Customer implements UserDetails {
         // UserDetails interface methods
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
-                return List.of((GrantedAuthority) () -> "ROLE_" + role.name());
+                return List.of(() -> "ROLE_" + role.name());
         }
 
         @Override

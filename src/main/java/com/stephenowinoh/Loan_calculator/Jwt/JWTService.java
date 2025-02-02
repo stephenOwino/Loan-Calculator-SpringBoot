@@ -19,20 +19,20 @@ public class JWTService {
         private String secretKey;
 
         @Value("${jwt.expirationTime}")
-        private long expirationTime;  // expiration time in milliseconds
+        private long expirationTime;
 
         // Generate token including roles
         public String generateToken(JwtPayloadDTO jwtPayloadDTO) {
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("userId", jwtPayloadDTO.getId());
-                claims.put("roles", jwtPayloadDTO.getRoles()); // Store roles as a List
+                claims.put("roles", jwtPayloadDTO.getRoles());  // Store roles as a List
 
                 return Jwts.builder()
                         .setClaims(claims)
                         .setSubject(jwtPayloadDTO.getUsername())
                         .setIssuedAt(new Date(System.currentTimeMillis()))
                         .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                        .signWith(getKey(), SignatureAlgorithm.HS256)  // Use a fixed key
+                        .signWith(getKey(), SignatureAlgorithm.HS256)
                         .compact();
         }
 
@@ -41,7 +41,7 @@ public class JWTService {
                 return extractClaim(token, Claims::getSubject);
         }
 
-        // Extract roles from token (Fixed: Now correctly fetching "roles" instead of "token")
+        // Extract roles from token
         public List<String> extractRoles(String token) {
                 return extractClaim(token, claims -> claims.get("roles", List.class));
         }
@@ -77,10 +77,9 @@ public class JWTService {
                 return extractClaim(token, Claims::getExpiration);
         }
 
-        // Helper method to get the signing key (Fixed: Now uses a fixed secret key)
+        // Helper method to get the signing key
         private SecretKey getKey() {
                 byte[] keyBytes = Decoders.BASE64.decode(secretKey);
                 return Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
         }
 }
