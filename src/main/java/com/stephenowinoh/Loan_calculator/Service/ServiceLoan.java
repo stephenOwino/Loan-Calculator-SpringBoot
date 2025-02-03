@@ -61,6 +61,13 @@ public class ServiceLoan implements IServiceLoan {
                 loan.setDueDate(loan.getEndDate()); // Assuming dueDate is the same as endDate
                 loan.setPurpose(loanDto.getPurpose()); // Set the purpose field
                 loan.setInterestRate(interestRate);
+
+                // Set new fields
+                loan.setFullName(loanDto.getFullName());
+                loan.setLocation(loanDto.getLocation());
+                loan.setPhoneNumber(loanDto.getPhoneNumber());
+                loan.setEmail(loanDto.getEmail());
+
                 Loan savedLoan = loanRepository.save(loan);
 
                 return LoanMapper.toDto(savedLoan);
@@ -111,6 +118,12 @@ public class ServiceLoan implements IServiceLoan {
                 existingLoan.setLoanTerm(loanDto.getLoanTerm());
                 existingLoan.setPurpose(loanDto.getPurpose());
 
+                // Update new fields
+                existingLoan.setFullName(loanDto.getFullName());
+                existingLoan.setLocation(loanDto.getLocation());
+                existingLoan.setPhoneNumber(loanDto.getPhoneNumber());
+                existingLoan.setEmail(loanDto.getEmail());
+
                 Loan updatedLoan = loanRepository.save(existingLoan);
                 return LoanMapper.toDto(updatedLoan);
         }
@@ -123,6 +136,15 @@ public class ServiceLoan implements IServiceLoan {
                         throw new LoanNotFoundException("Loan not found with ID: " + id);
                 }
                 loanRepository.deleteById(id);
+        }
+
+        public void cancelLoan(Long id) {
+                logger.info("Canceling loan with ID: {}", id);
+
+                Loan loan = loanRepository.findById(id)
+                        .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
+                loan.setStatus(Loan.LoanStatus.CANCELED);
+                loanRepository.save(loan);
         }
 
         @Override

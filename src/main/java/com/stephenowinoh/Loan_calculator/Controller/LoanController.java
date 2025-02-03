@@ -146,7 +146,20 @@ public class LoanController {
                 Page<LoanDTO> loans = loanService.getAllLoans(page, size, sortBy, sortDir);
                 return new ResponseEntity<>(loans, HttpStatus.OK);
         }
+
+        /**
+         * Cancel an existing loan by its ID.
+         *
+         * @param loanId the ID of the loan to cancel.
+         * @return a success message.
+         */
+        @PutMapping("/{loanId}/cancel")
+        public ResponseEntity<String> cancelLoan(@PathVariable Long loanId) {
+                loanService.cancelLoan(loanId);
+                return new ResponseEntity<>("Loan canceled successfully", HttpStatus.OK);
+        }
 }
+
 
 
 

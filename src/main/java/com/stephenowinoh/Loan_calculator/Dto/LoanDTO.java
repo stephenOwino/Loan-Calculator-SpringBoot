@@ -22,10 +22,19 @@ public class LoanDTO {
         private LocalDateTime paymentDate;
         private BigDecimal interestRate;
 
+        // New fields
+        private String fullName;
+        private String location;
+        private String phoneNumber;
+        private String email;
+
         public LoanDTO() {
         }
 
-        public LoanDTO(Long id, Long customerId, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, String repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, int loanTerm, LocalDateTime dueDate, String purpose, LoanStatus status, LocalDateTime paymentDate, BigDecimal interestRate) {
+        public LoanDTO(Long id, Long customerId, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment,
+                       String repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate,
+                       int loanTerm, LocalDateTime dueDate, String purpose, LoanStatus status, LocalDateTime paymentDate,
+                       BigDecimal interestRate, String fullName, String location, String phoneNumber, String email) {
                 this.id = id;
                 this.customerId = customerId;
                 this.amount = amount;
@@ -41,7 +50,13 @@ public class LoanDTO {
                 this.status = status;
                 this.paymentDate = paymentDate;
                 this.interestRate = interestRate;
+                this.fullName = fullName;
+                this.location = location;
+                this.phoneNumber = phoneNumber;
+                this.email = email;
         }
+
+        // Getters and Setters
 
         public Long getId() {
                 return id;
@@ -161,5 +176,37 @@ public class LoanDTO {
 
         public void setInterestRate(BigDecimal interestRate) {
                 this.interestRate = interestRate;
+        }
+
+        public String getFullName() {
+                return fullName;
+        }
+
+        public void setFullName(String fullName) {
+                this.fullName = fullName;
+        }
+
+        public String getLocation() {
+                return location;
+        }
+
+        public void setLocation(String location) {
+                this.location = location;
+        }
+
+        public String getPhoneNumber() {
+                return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+                this.phoneNumber = phoneNumber;
+        }
+
+        public String getEmail() {
+                return email;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
         }
 }

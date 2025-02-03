@@ -79,12 +79,24 @@ public class Loan {
         @Column(nullable = false)
         private BigDecimal interestRate;
 
+        @Column(nullable = false)
+        private String fullName;
+
+        @Column(nullable = false)
+        private String location;
+
+        @Column(nullable = false)
+        private String phoneNumber;
+
+        @Column(nullable = false)
+        private String email;
+
         public Loan() {}
 
         public Loan(Long id, Customer customer, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment,
                     RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate,
                     int loanTerm, RepaymentPlan repaymentPlan, LocalDateTime dueDate, String purpose, LoanStatus status,
-                    LocalDateTime paymentDate, BigDecimal interestRate) {
+                    LocalDateTime paymentDate, BigDecimal interestRate, String fullName, String location, String phoneNumber, String email) {
                 this.id = id;
                 this.customer = customer;
                 this.amount = amount;
@@ -101,6 +113,10 @@ public class Loan {
                 this.status = status;
                 this.paymentDate = paymentDate;
                 this.interestRate = interestRate;
+                this.fullName = fullName;
+                this.location = location;
+                this.phoneNumber = phoneNumber;
+                this.email = email;
         }
 
         // Getters and Setters
@@ -233,6 +249,38 @@ public class Loan {
                 this.interestRate = interestRate;
         }
 
+        public String getFullName() {
+                return fullName;
+        }
+
+        public void setFullName(String fullName) {
+                this.fullName = fullName;
+        }
+
+        public String getLocation() {
+                return location;
+        }
+
+        public void setLocation(String location) {
+                this.location = location;
+        }
+
+        public String getPhoneNumber() {
+                return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+                this.phoneNumber = phoneNumber;
+        }
+
+        public String getEmail() {
+                return email;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
+        }
+
         @PrePersist
         protected void onCreate() {
                 this.startDate = (this.startDate != null) ? this.startDate : LocalDateTime.now();
@@ -245,6 +293,7 @@ public class Loan {
                 PENDING,
                 APPROVED,
                 REJECTED,
-                COMPLETED
+                COMPLETED,
+                CANCELED // Add this status
         }
 }

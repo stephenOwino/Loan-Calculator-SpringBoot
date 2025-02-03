@@ -27,6 +27,13 @@ public class LoanMapper {
                 loanDTO.setStatus(loan.getStatus());
                 loanDTO.setPaymentDate(loan.getPaymentDate());
                 loanDTO.setInterestRate(loan.getInterestRate());
+
+                // Set new fields
+                loanDTO.setFullName(loan.getFullName());
+                loanDTO.setLocation(loan.getLocation());
+                loanDTO.setPhoneNumber(loan.getPhoneNumber());
+                loanDTO.setEmail(loan.getEmail());
+
                 return loanDTO;
         }
 
@@ -56,6 +63,12 @@ public class LoanMapper {
                 loan.setStatus(loanDTO.getStatus());
                 loan.setPaymentDate(loanDTO.getPaymentDate());
                 loan.setInterestRate(loanDTO.getInterestRate());
+
+                // Set new fields
+                loan.setFullName(loanDTO.getFullName());
+                loan.setLocation(loanDTO.getLocation());
+                loan.setPhoneNumber(loanDTO.getPhoneNumber());
+                loan.setEmail(loanDTO.getEmail());
 
                 return loan;
         }
