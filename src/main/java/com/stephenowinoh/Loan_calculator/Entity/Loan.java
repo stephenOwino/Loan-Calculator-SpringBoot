@@ -1,5 +1,9 @@
 package com.stephenowinoh.Loan_calculator.Entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stephenowinoh.Loan_calculator.TimeSerializationDecerialization.CustomLocalDateTimeDeserializer;
+import com.stephenowinoh.Loan_calculator.TimeSerializationDecerialization.CustomLocalDateTimeSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,12 +39,18 @@ public class Loan {
 
         @CreationTimestamp
         @Column(nullable = false, updatable = false)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
         private LocalDateTime createdAt;
 
         @Column(nullable = false)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
         private LocalDateTime startDate;
 
         @Column(nullable = false)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
         private LocalDateTime endDate;
 
         @Column(nullable = false)
@@ -50,6 +60,8 @@ public class Loan {
         private RepaymentPlan repaymentPlan;
 
         @Column(nullable = false)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
         private LocalDateTime dueDate;
 
         @Column(nullable = false)
@@ -60,15 +72,19 @@ public class Loan {
         private LoanStatus status;
 
         @Column(nullable = true)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
         private LocalDateTime paymentDate;
 
         @Column(nullable = false)
         private BigDecimal interestRate;
 
-        public Loan() {
-        }
+        public Loan() {}
 
-        public Loan(Long id, Customer customer, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, int loanTerm, RepaymentPlan repaymentPlan, LocalDateTime dueDate, String purpose, LoanStatus status, LocalDateTime paymentDate, BigDecimal interestRate) {
+        public Loan(Long id, Customer customer, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment,
+                    RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate,
+                    int loanTerm, RepaymentPlan repaymentPlan, LocalDateTime dueDate, String purpose, LoanStatus status,
+                    LocalDateTime paymentDate, BigDecimal interestRate) {
                 this.id = id;
                 this.customer = customer;
                 this.amount = amount;
@@ -86,6 +102,8 @@ public class Loan {
                 this.paymentDate = paymentDate;
                 this.interestRate = interestRate;
         }
+
+        // Getters and Setters
 
         public Long getId() {
                 return id;
