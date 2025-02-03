@@ -1,22 +1,17 @@
 package com.stephenowinoh.Loan_calculator.Dto;
 
 import com.stephenowinoh.Loan_calculator.Entity.Loan.LoanStatus;
-import com.stephenowinoh.Loan_calculator.Entity.RepaymentFrequency;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 public class LoanDTO {
         private Long id;
         private Long customerId;
         private BigDecimal amount;
         private BigDecimal totalInterest;
         private BigDecimal totalRepayment;
-        private String repaymentFrequency; // Updated to String for display purposes
+        private String repaymentFrequency;
         private LocalDateTime createdAt;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
@@ -27,8 +22,26 @@ public class LoanDTO {
         private LocalDateTime paymentDate;
         private BigDecimal interestRate;
 
-        // Getters and Setters...
+        public LoanDTO() {
+        }
 
+        public LoanDTO(Long id, Long customerId, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, String repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, int loanTerm, LocalDateTime dueDate, String purpose, LoanStatus status, LocalDateTime paymentDate, BigDecimal interestRate) {
+                this.id = id;
+                this.customerId = customerId;
+                this.amount = amount;
+                this.totalInterest = totalInterest;
+                this.totalRepayment = totalRepayment;
+                this.repaymentFrequency = repaymentFrequency;
+                this.createdAt = createdAt;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.loanTerm = loanTerm;
+                this.dueDate = dueDate;
+                this.purpose = purpose;
+                this.status = status;
+                this.paymentDate = paymentDate;
+                this.interestRate = interestRate;
+        }
 
         public Long getId() {
                 return id;

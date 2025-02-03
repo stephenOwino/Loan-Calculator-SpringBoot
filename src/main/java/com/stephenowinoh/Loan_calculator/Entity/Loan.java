@@ -2,16 +2,12 @@ package com.stephenowinoh.Loan_calculator.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "loans")
 public class Loan {
 
@@ -69,7 +65,27 @@ public class Loan {
         @Column(nullable = false)
         private BigDecimal interestRate;
 
-        // Getters and Setters
+        public Loan() {
+        }
+
+        public Loan(Long id, Customer customer, BigDecimal amount, BigDecimal totalInterest, BigDecimal totalRepayment, RepaymentFrequency repaymentFrequency, LocalDateTime createdAt, LocalDateTime startDate, LocalDateTime endDate, int loanTerm, RepaymentPlan repaymentPlan, LocalDateTime dueDate, String purpose, LoanStatus status, LocalDateTime paymentDate, BigDecimal interestRate) {
+                this.id = id;
+                this.customer = customer;
+                this.amount = amount;
+                this.totalInterest = totalInterest;
+                this.totalRepayment = totalRepayment;
+                this.repaymentFrequency = repaymentFrequency;
+                this.createdAt = createdAt;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.loanTerm = loanTerm;
+                this.repaymentPlan = repaymentPlan;
+                this.dueDate = dueDate;
+                this.purpose = purpose;
+                this.status = status;
+                this.paymentDate = paymentDate;
+                this.interestRate = interestRate;
+        }
 
         public Long getId() {
                 return id;
@@ -87,11 +103,11 @@ public class Loan {
                 this.customer = customer;
         }
 
-        public @DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal getAmount() {
+        public BigDecimal getAmount() {
                 return amount;
         }
 
-        public void setAmount(@DecimalMin(value = "0.0", inclusive = false, message = "Loan amount must be greater than zero.") BigDecimal amount) {
+        public void setAmount(BigDecimal amount) {
                 this.amount = amount;
         }
 
@@ -198,8 +214,6 @@ public class Loan {
         public void setInterestRate(BigDecimal interestRate) {
                 this.interestRate = interestRate;
         }
-
-        // ...existing code...
 
         @PrePersist
         protected void onCreate() {
