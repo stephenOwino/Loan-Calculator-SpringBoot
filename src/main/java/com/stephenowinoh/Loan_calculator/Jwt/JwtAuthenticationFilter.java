@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 @Configuration
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -26,11 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @Autowired
         private CustomerDetailService myUserDetailsService;
 
+        private static final Logger logger = Logger.getLogger(JwtAuthenticationFilter.class.getName());
+
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                 throws ServletException, IOException {
                 String authHeader = request.getHeader("Authorization");
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                        logger.warning("Missing or invalid Authorization header");
                         filterChain.doFilter(request, response);
                         return;
                 }
@@ -52,6 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                                logger.info("Authenticated user: " + username + " with roles: " + roles);
+                        } else {
+                                logger.warning("Invalid JWT token for user: " + username);
                         }
                 }
 
