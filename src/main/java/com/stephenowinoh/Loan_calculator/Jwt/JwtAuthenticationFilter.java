@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 // Extract roles from JWT
                                 List<String> roles = jwtService.extractRoles(token);
                                 var authorities = roles.stream()
-                                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                                        .map(SimpleGrantedAuthority::new)
                                         .collect(Collectors.toList());
 
                                 UsernamePasswordAuthenticationToken authToken =
@@ -60,6 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         } else {
                                 logger.warning("Invalid JWT token for user: " + username);
                         }
+                } else {
+                        logger.warning("Username is null or already authenticated");
                 }
 
                 filterChain.doFilter(request, response);
