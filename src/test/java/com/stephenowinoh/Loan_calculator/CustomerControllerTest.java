@@ -5,7 +5,6 @@ import com.stephenowinoh.Loan_calculator.Controller.LoginRequest;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerDto;
 import com.stephenowinoh.Loan_calculator.Dto.CustomerResponseDto;
 import com.stephenowinoh.Loan_calculator.Entity.Customer;
-import com.stephenowinoh.Loan_calculator.Exception.BadRequestException;
 import com.stephenowinoh.Loan_calculator.Jwt.JWTService;
 import com.stephenowinoh.Loan_calculator.Role.Role;
 import com.stephenowinoh.Loan_calculator.Service.ICustomerService;
@@ -55,13 +54,13 @@ class CustomerControllerTest {
                 customerDto.setLastName("Doe");
 
                 CustomerResponseDto customerResponseDto = new CustomerResponseDto(
-                        1L,  // id
-                        "John",  // firstName
-                        "Doe",  // lastName
-                        "john_doe",  // username
-                        "john.doe@example.com",  // email
-                        "2025-02-04T09:00:00",  // createdAt
-                        "USER"  // role
+                        1L,
+                        "John",
+                        "Doe",
+                        "john_doe",
+                        "john.doe@example.com",
+                        "2025-02-04T09:00:00",
+                        "USER"
                 );
 
                 when(customerService.findByUsername(anyString())).thenReturn(Optional.empty());
@@ -99,4 +98,3 @@ class CustomerControllerTest {
                 assertEquals("dummy_token", response.getBody());
         }
 }
-
