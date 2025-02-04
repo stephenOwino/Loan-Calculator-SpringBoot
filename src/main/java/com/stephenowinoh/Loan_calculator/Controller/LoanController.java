@@ -2,6 +2,7 @@ package com.stephenowinoh.Loan_calculator.Controller;
 
 import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
 import com.stephenowinoh.Loan_calculator.Service.ServiceLoan;
+import com.stephenowinoh.Loan_calculator.Service.ICustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,99 +20,62 @@ import java.util.List;
 public class LoanController {
 
         private final ServiceLoan loanService;
+        private final ICustomerService customerService;
 
-        public LoanController(ServiceLoan loanService) {
+        public LoanController(ServiceLoan loanService, ICustomerService customerService) {
                 this.loanService = loanService;
+                this.customerService = customerService;
         }
 
-        /**
-         * Create a new loan for the authenticated customer.
-         *
-         * @param loanDto the loan details to be created.
-         * @param userDetails the authenticated user's details.
-         * @return the created loan details.
-         */
         @PostMapping
-        public ResponseEntity<LoanDTO> createLoan(@RequestBody LoanDTO loanDto,
-                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        public ResponseEntity<LoanDTO> createLoan(@RequestBody LoanDTO loanDto, @AuthenticationPrincipal UserDetails userDetails) {
                 String username = userDetails.getUsername();
+
+                // Check if the full name matches the registered first and last name
+                if (!customerService.verifyCustomerName(loanDto.getFullName(), username)) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+                }
+
                 LoanDTO createdLoan = loanService.createLoan(loanDto, username);
-                return new ResponseEntity<>(createdLoan, HttpStatus.CREATED);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdLoan);
         }
 
-        /**
-         * Get a loan by its ID.
-         *
-         * @param loanId the ID of the loan to retrieve.
-         * @return the loan details.
-         */
         @GetMapping("/{loanId}")
         public ResponseEntity<LoanDTO> getLoanById(@PathVariable Long loanId) {
                 LoanDTO loanDto = loanService.getLoanById(loanId);
-                return new ResponseEntity<>(loanDto, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(loanDto);
         }
 
-        /**
-         * Get all loans for the authenticated user.
-         *
-         * @return a list of all loans.
-         */
         @GetMapping
         public ResponseEntity<List<LoanDTO>> getAllLoans() {
                 List<LoanDTO> loans = loanService.getAllLoans();
-                return new ResponseEntity<>(loans, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(loans);
         }
 
-        /**
-         * Update an existing loan.
-         *
-         * @param loanId the ID of the loan to update.
-         * @param loanDto the updated loan details.
-         * @return the updated loan details.
-         */
         @PutMapping("/{loanId}")
         public ResponseEntity<LoanDTO> updateLoan(@PathVariable Long loanId, @RequestBody LoanDTO loanDto) {
                 LoanDTO updatedLoan = loanService.updateLoan(loanId, loanDto);
-                return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(updatedLoan);
         }
 
-        /**
-         * Delete a loan by its ID.
-         *
-         * @param loanId the ID of the loan to delete.
-         * @return a no-content response.
-         */
         @DeleteMapping("/{loanId}")
         public ResponseEntity<Void> deleteLoan(@PathVariable Long loanId) {
                 loanService.deleteLoan(loanId);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
-        /**
-         * Generate a loan statement for the authenticated user.
-         *
-         * @param userDetails the authenticated user's details.
-         * @return the generated loan statement.
-         */
         @GetMapping("/statement")
         public ResponseEntity<String> generateLoanStatement(@AuthenticationPrincipal UserDetails userDetails) {
                 String username = userDetails.getUsername();
                 String statement = loanService.generateLoanStatementForUser(username);
-                return new ResponseEntity<>(statement, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(statement);
         }
 
-        /**
-         * Download the loan statement for the authenticated user as a text file.
-         *
-         * @param userDetails the authenticated user's details.
-         * @return the loan statement file.
-         */
         @GetMapping("/statement/download")
         public ResponseEntity<ByteArrayResource> downloadLoanStatement(@AuthenticationPrincipal UserDetails userDetails) {
                 String username = userDetails.getUsername();
                 String statement = loanService.generateLoanStatementForUser(username);
 
-                // Convert statement to byte array
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 try {
                         byteArrayOutputStream.write(statement.getBytes());
@@ -119,7 +83,6 @@ public class LoanController {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
 
-                // Return file as downloadable resource
                 ByteArrayResource resource = new ByteArrayResource(byteArrayOutputStream.toByteArray());
                 return ResponseEntity.ok()
                         .contentType(MediaType.TEXT_PLAIN)
@@ -127,15 +90,6 @@ public class LoanController {
                         .body(resource);
         }
 
-        /**
-         * Get all loans with pagination and sorting.
-         *
-         * @param page the page number.
-         * @param size the page size.
-         * @param sortBy the field to sort by.
-         * @param sortDir the direction of sorting (asc or desc).
-         * @return paginated loans.
-         */
         @GetMapping("/paginated")
         public ResponseEntity<Page<LoanDTO>> getAllLoansWithPagination(
                 @RequestParam(defaultValue = "0") int page,
@@ -144,22 +98,15 @@ public class LoanController {
                 @RequestParam(defaultValue = "asc") String sortDir) {
 
                 Page<LoanDTO> loans = loanService.getAllLoans(page, size, sortBy, sortDir);
-                return new ResponseEntity<>(loans, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(loans);
         }
 
-        /**
-         * Cancel an existing loan by its ID.
-         *
-         * @param loanId the ID of the loan to cancel.
-         * @return a success message.
-         */
         @PutMapping("/{loanId}/cancel")
         public ResponseEntity<String> cancelLoan(@PathVariable Long loanId) {
                 loanService.cancelLoan(loanId);
-                return new ResponseEntity<>("Loan canceled successfully", HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body("Loan canceled successfully");
         }
 }
-
 
 
 

@@ -29,4 +29,6 @@ public interface ICustomerService {
         List<CustomerResponseDto> getAllCustomers();
 
         UserDetails loadUserByUsername(String username);
+
+        boolean verifyCustomerName(String fullName, String username);
 }

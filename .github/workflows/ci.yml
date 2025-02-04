@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - steve
+      - main
   pull_request:
     branches:
       - steve
+      - main
 
 jobs:
   build:
@@ -31,11 +33,19 @@ jobs:
           sudo apt-get install -y docker-compose
           docker-compose version  # Verify installation
 
-      - name: Build and run Docker Compose
-        run: |
-          docker-compose -f docker-compose.yml build
-          docker-compose -f docker-compose.yml up -d
-
       - name: Run Maven Build with Debugging
         run: |
           mvn clean package -DskipTests -X
+
+      - name: Run Tests
+        run: mvn test
+
+      - name: Build Docker Images
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Start Services
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Tear Down Services
+        if: always()
+        run: docker-compose -f docker-compose.yml down

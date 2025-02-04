@@ -109,4 +109,15 @@ public class CustomerService implements ICustomerService {
                         throw new UsernameNotFoundException("User not found with username: " + username);
                 }
         }
+
+        // Verify that the full name matches the registered first and last name
+        public boolean verifyCustomerName(String fullName, String username) {
+                Optional<Customer> customerOpt = customerRepository.findByUsername(username);
+                if (customerOpt.isPresent()) {
+                        Customer customer = customerOpt.get();
+                        String registeredFullName = customer.getFirstName() + " " + customer.getLastName();
+                        return registeredFullName.equalsIgnoreCase(fullName);
+                }
+                return false;
+        }
 }

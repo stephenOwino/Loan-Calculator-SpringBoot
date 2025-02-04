@@ -1,3 +1,4 @@
+
 package com.stephenowinoh.Loan_calculator.Service;
 
 import com.stephenowinoh.Loan_calculator.Dto.LoanDTO;
@@ -36,14 +37,22 @@ public class ServiceLoan implements IServiceLoan {
 
         @Override
         public LoanDTO createLoan(LoanDTO loanDto, String username) {
-                logger.info("Creating loan for user: {}", username);
+                logger.info("Attempting to create loan for user: {}", username);
 
                 Customer customer = customerRepository.findByUsername(username)
                         .orElseThrow(() -> new CustomerNotFoundException("Customer not found with username: " + username));
 
+                // Verify full name matches registered name
+                String registeredFullName = customer.getFirstName() + " " + customer.getLastName();
+                if (!registeredFullName.equalsIgnoreCase(loanDto.getFullName())) {
+                        logger.warn("Full name does not match registered user details for username: {}", username);
+                        throw new RuntimeException("Full name does not match registered user details");
+                }
+
                 // Check the number of active loans
                 List<Loan> activeLoans = loanRepository.findByCustomerAndEndDateAfter(customer, LocalDateTime.now());
                 if (activeLoans.size() >= 3) {
+                        logger.warn("User: {} cannot have more than three active loans", username);
                         throw new IllegalStateException("Customer cannot have more than three active loans.");
                 }
 
@@ -69,6 +78,7 @@ public class ServiceLoan implements IServiceLoan {
                 loan.setEmail(loanDto.getEmail());
 
                 Loan savedLoan = loanRepository.save(loan);
+                logger.info("Loan created successfully for user: {}", username);
 
                 return LoanMapper.toDto(savedLoan);
         }
@@ -125,26 +135,29 @@ public class ServiceLoan implements IServiceLoan {
                 existingLoan.setEmail(loanDto.getEmail());
 
                 Loan updatedLoan = loanRepository.save(existingLoan);
+                logger.info("Loan with ID: {} updated successfully", id);
                 return LoanMapper.toDto(updatedLoan);
         }
 
         @Override
         public void deleteLoan(Long id) {
-                logger.info("Deleting loan with ID: {}", id);
+                logger.info("Attempting to delete loan with ID: {}", id);
 
                 if (!loanRepository.existsById(id)) {
                         throw new LoanNotFoundException("Loan not found with ID: " + id);
                 }
                 loanRepository.deleteById(id);
+                logger.info("Loan with ID: {} deleted successfully", id);
         }
 
         public void cancelLoan(Long id) {
-                logger.info("Canceling loan with ID: {}", id);
+                logger.info("Attempting to cancel loan with ID: {}", id);
 
                 Loan loan = loanRepository.findById(id)
                         .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + id));
                 loan.setStatus(Loan.LoanStatus.CANCELED);
                 loanRepository.save(loan);
+                logger.info("Loan with ID: {} canceled successfully", id);
         }
 
         @Override
