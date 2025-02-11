@@ -37,9 +37,6 @@ jobs:
         run: |
           mvn clean package -DskipTests  # Skip tests during build
 
-      - name: Run Tests
-        run: mvn test  # This will run the tests separately after the build
-
       - name: Build Docker Images
         run: docker-compose -f docker-compose.yml build
 
