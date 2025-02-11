@@ -33,12 +33,15 @@ jobs:
           sudo apt-get install -y docker-compose
           docker-compose version  # Verify installation
 
+      - name: Resolve Maven Dependencies
+        run: mvn dependency:resolve
+
       - name: Run Maven Build with Debugging
         run: |
-          mvn clean package -X  # Removed -DskipTests
+          mvn clean package -X
 
       - name: Run Tests
-        run: mvn test
+        run: mvn test -X  # Add debug flag to run tests with debugging output
 
       - name: Build Docker Images
         run: docker-compose -f docker-compose.yml build
