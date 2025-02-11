@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Maven Build with Debugging
         run: |
-          mvn clean package -DskipTests -X
+          mvn clean package -X  # Removed -DskipTests
 
       - name: Run Tests
         run: mvn test

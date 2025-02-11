@@ -60,7 +60,7 @@ class CustomerControllerTest {
                         "john_doe",
                         "john.doe@example.com",
                         "2025-02-04T09:00:00",
-                        "USER"
+                        "CUSTOMER"
                 );
 
                 when(customerService.findByUsername(anyString())).thenReturn(Optional.empty());
