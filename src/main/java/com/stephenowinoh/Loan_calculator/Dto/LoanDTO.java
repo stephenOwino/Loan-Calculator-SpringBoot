@@ -210,3 +210,15 @@ public class LoanDTO {
                 this.email = email;
         }
 }
+
+
+
+//        "amount": 50000,
+//        "loanTerm": 12,
+//        "repaymentFrequency": "MONTHLY",
+//        "purpose": "Home renovation",
+//        "fullName": "John Doe",
+//        "location": "123 Main St, Nairobi, Kenya",
+//        "phoneNumber": "+254700123456",
+//        "email": "john.doe@example.com"
+//        }

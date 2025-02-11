@@ -6,6 +6,7 @@ import com.stephenowinoh.Loan_calculator.Entity.Customer;
 import com.stephenowinoh.Loan_calculator.Entity.Loan;
 import com.stephenowinoh.Loan_calculator.Exception.CustomerNotFoundException;
 import com.stephenowinoh.Loan_calculator.Exception.LoanNotFoundException;
+import com.stephenowinoh.Loan_calculator.Exception.NameMismatchException;
 import com.stephenowinoh.Loan_calculator.Mapper.LoanMapper;
 import com.stephenowinoh.Loan_calculator.Repository.CustomerRepository;
 import com.stephenowinoh.Loan_calculator.Repository.LoanRepository;
@@ -46,8 +47,9 @@ public class ServiceLoan implements IServiceLoan {
                 String registeredFullName = customer.getFirstName() + " " + customer.getLastName();
                 if (!registeredFullName.equalsIgnoreCase(loanDto.getFullName())) {
                         logger.warn("Full name does not match registered user details for username: {}", username);
-                        throw new RuntimeException("Full name does not match registered user details");
+                        throw new NameMismatchException("Full name does not match registered user details. Please ensure the name is correct.");
                 }
+
 
                 // Check the number of active loans
                 List<Loan> activeLoans = loanRepository.findByCustomerAndEndDateAfter(customer, LocalDateTime.now());
