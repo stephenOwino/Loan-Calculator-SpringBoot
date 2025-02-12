@@ -23,17 +23,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-
         private final CustomerDetailService customerDetailService;
-
-
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
         private final CustomAccessDeniedHandler accessDeniedHandler;
 
         public SecurityConfiguration(CustomerDetailService customerDetailService, JwtAuthenticationFilter jwtAuthenticationFilter, CustomAccessDeniedHandler accessDeniedHandler) {
@@ -68,10 +68,10 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers("/api/loans/**").hasAuthority("CUSTOMER")
-
                                 .anyRequest().authenticated()
-                        ).userDetailsService(customerDetailService)
-                        .exceptionHandling(e ->e.accessDeniedHandler(accessDeniedHandler)
+                        )
+                        .userDetailsService(customerDetailService)
+                        .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler)
                                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -79,29 +79,28 @@ public class SecurityConfiguration {
                 return http.build();
         }
 
-
-
-@Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration config = getCorsConfiguration();
+        @Bean
+        public FilterRegistrationBean<CorsFilter> corsFilter() {
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
                 config.setMaxAge(3600L);
+                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Adjust to your frontend URL
+                config.setAllowedHeaders(Arrays.asList(
+                        "Authorization",
+                        "Content-Type",
+                        "Accept"
+                ));
+                config.setAllowedMethods(Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE"
+                ));
+                source.registerCorsConfiguration("/**", config);
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", config);  // Apply the configuration to all routes
-
-                return source;
-        }
-
-        private static CorsConfiguration getCorsConfiguration() {
-                CorsConfiguration config = new CorsConfiguration();
-                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Ensure this matches your React app URL
-                config.addAllowedMethod("GET");
-                config.addAllowedMethod("POST");
-                config.addAllowedMethod("PUT");
-                config.addAllowedMethod("DELETE");
-                config.addAllowedHeader("*");  // Allow all headers, including 'Authorization'
-                config.addAllowedHeader("Authorization");
-                return config;
+                FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+                bean.setOrder(-102);  // Ensure CORS filter is executed before Spring Security Filter
+                return bean;
         }
 }
