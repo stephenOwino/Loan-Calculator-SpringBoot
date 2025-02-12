@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
@@ -80,7 +79,7 @@ public class SecurityConfiguration {
         }
 
         @Bean
-        public FilterRegistrationBean<CorsFilter> corsFilter() {
+        public CorsFilter corsFilter() {
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
@@ -99,8 +98,6 @@ public class SecurityConfiguration {
                 ));
                 source.registerCorsConfiguration("/**", config);
 
-                FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-                bean.setOrder(-102);  // Ensure CORS filter is executed before Spring Security Filter
-                return bean;
+                return new CorsFilter(source);  // Return CorsFilter directly here
         }
 }
