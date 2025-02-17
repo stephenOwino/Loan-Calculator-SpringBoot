@@ -40,7 +40,19 @@ jobs:
       - name: Build Docker Images
         run: docker-compose -f docker-compose.yml build
 
+      - name: Set database environment variables
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        run: |
+          echo "Setting database environment variables..."
+
       - name: Start Services
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: docker-compose -f docker-compose.yml up -d
 
       - name: Tear Down Services
