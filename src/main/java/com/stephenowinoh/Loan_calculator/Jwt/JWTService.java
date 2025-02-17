@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 @Service
 public class JWTService {
@@ -20,6 +21,8 @@ public class JWTService {
 
         @Value("${jwt.expirationTime}")
         private long expirationTime;
+
+        private static final Logger logger = Logger.getLogger(JWTService.class.getName());
 
         // Generate token including roles
         public String generateToken(JwtPayloadDTO jwtPayloadDTO) {
@@ -38,12 +41,22 @@ public class JWTService {
 
         // Extract username from token
         public String extractUserName(String token) {
-                return extractClaim(token, Claims::getSubject);
+                try {
+                        return extractClaim(token, Claims::getSubject);
+                } catch (Exception e) {
+                        logger.warning("Error extracting username from token: " + e.getMessage());
+                        return null;
+                }
         }
 
         // Extract roles from token
         public List<String> extractRoles(String token) {
-                return extractClaim(token, claims -> claims.get("roles", List.class));
+                try {
+                        return extractClaim(token, claims -> claims.get("roles", List.class));
+                } catch (Exception e) {
+                        logger.warning("Error extracting roles from token: " + e.getMessage());
+                        return Collections.emptyList();
+                }
         }
 
         // Extract specific claims
@@ -63,13 +76,23 @@ public class JWTService {
 
         // Validate the token
         public boolean validateToken(String token, UserDetails userDetails) {
-                final String username = extractUserName(token);
-                return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+                try {
+                        final String username = extractUserName(token);
+                        return (username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+                } catch (Exception e) {
+                        logger.warning("Error validating token: " + e.getMessage());
+                        return false;
+                }
         }
 
         // Check if the token has expired
         private boolean isTokenExpired(String token) {
-                return extractExpiration(token).before(new Date());
+                try {
+                        return extractExpiration(token).before(new Date());
+                } catch (Exception e) {
+                        logger.warning("Error checking token expiration: " + e.getMessage());
+                        return true; // Consider expired if an error occurs
+                }
         }
 
         // Extract expiration date from token
