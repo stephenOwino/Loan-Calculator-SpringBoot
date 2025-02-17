@@ -75,7 +75,7 @@ public class CustomerController {
 
                                         // Generate JWT token
                                         JwtPayloadDTO payloadDTO = new JwtPayloadDTO(
-                                                user.getId(),
+                                                user.getId(),  // Use user.getId() for customerId
                                                 user.getUsername(),
                                                 user.getFirstName(),
                                                 user.getLastName(),
@@ -90,9 +90,9 @@ public class CustomerController {
                                         payloadDTO.setToken(jwtToken);
 
                                         // Return the token in response
-                                        return ResponseEntity.ok(jwtToken); // Return the JWT token
+                                        return ResponseEntity.ok(jwtToken); // Return the JWT token with customerId
                                 } else {
-                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Customer not found");
                                 }
                         } else {
                                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -101,7 +101,6 @@ public class CustomerController {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
                 }
         }
-
 
         // Get customer by ID
         @GetMapping("/{id}")

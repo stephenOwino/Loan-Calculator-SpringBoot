@@ -24,7 +24,7 @@ public class JWTService {
         // Generate token including roles
         public String generateToken(JwtPayloadDTO jwtPayloadDTO) {
                 Map<String, Object> claims = new HashMap<>();
-                claims.put("userId", jwtPayloadDTO.getId());
+                claims.put("customerId", jwtPayloadDTO.getId()); // Change userId to customerId
                 claims.put("roles", jwtPayloadDTO.getRoles());  // Store roles as a List
 
                 return Jwts.builder()
