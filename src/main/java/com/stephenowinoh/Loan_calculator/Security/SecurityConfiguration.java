@@ -51,7 +51,6 @@ public class SecurityConfiguration {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
-
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
@@ -70,4 +69,5 @@ public class SecurityConfiguration {
 
                 return http.build();
         }
+
 }
