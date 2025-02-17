@@ -19,11 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -60,7 +55,7 @@ public class SecurityConfiguration {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
-                        .cors(Customizer.withDefaults())
+                        .cors(Customizer.withDefaults())  // Spring will handle CORS
                         .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
@@ -74,28 +69,5 @@ public class SecurityConfiguration {
                         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
-        }
-
-        @Bean
-        public CorsFilter corsFilter() {
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowCredentials(true);
-                config.setMaxAge(3600L);
-                config.addAllowedOrigin("https://loan-calculator-react.onrender.com");  // Adjust to your frontend URL
-                config.setAllowedHeaders(Arrays.asList(
-                        "Authorization",
-                        "Content-Type",
-                        "Accept"
-                ));
-                config.setAllowedMethods(Arrays.asList(
-                        "GET",
-                        "POST",
-                        "PUT",
-                        "DELETE"
-                ));
-                source.registerCorsConfiguration("/**", config);
-
-                return new CorsFilter(source);  // Return CorsFilter directly here
         }
 }
