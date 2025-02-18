@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.function.Function;
@@ -27,7 +28,7 @@ public class JWTService {
         // Generate token including roles
         public String generateToken(JwtPayloadDTO jwtPayloadDTO) {
                 Map<String, Object> claims = new HashMap<>();
-                claims.put("customerId", jwtPayloadDTO.getId()); // Change userId to customerId
+                claims.put("customerId", jwtPayloadDTO.getId());
                 claims.put("roles", jwtPayloadDTO.getRoles());  // Store roles as a List
 
                 return Jwts.builder()
@@ -40,7 +41,7 @@ public class JWTService {
         }
 
         // Extract username from token
-        public String extractUserName(String token) {
+        public String extractUsername(String token) {
                 try {
                         return extractClaim(token, Claims::getSubject);
                 } catch (Exception e) {
@@ -75,9 +76,9 @@ public class JWTService {
         }
 
         // Validate the token
-        public boolean validateToken(String token, UserDetails userDetails) {
+        public boolean isValid(String token, UserDetails userDetails) {
                 try {
-                        final String username = extractUserName(token);
+                        final String username = extractUsername(token);
                         return (username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token));
                 } catch (Exception e) {
                         logger.warning("Error validating token: " + e.getMessage());
@@ -104,5 +105,65 @@ public class JWTService {
         private SecretKey getKey() {
                 byte[] keyBytes = Decoders.BASE64.decode(secretKey);
                 return Keys.hmacShaKeyFor(keyBytes);
+        }
+
+        // --- Additional Methods Below ---
+
+        // Method to validate token based on only username
+        public boolean validateTokenByUsername(String token, String username) {
+                try {
+                        final String extractedUsername = extractUsername(token);
+                        return (extractedUsername != null && extractedUsername.equals(username) && !isTokenExpired(token));
+                } catch (Exception e) {
+                        logger.warning("Error validating token by username: " + e.getMessage());
+                        return false;
+                }
+        }
+
+        // Generate token for userDetails only (for simple user cases)
+        public String generateTokenForUserDetails(UserDetails userDetails) {
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("roles", userDetails.getAuthorities());  // Store roles directly as authorities
+
+                return Jwts.builder()
+                        .setClaims(claims)
+                        .setSubject(userDetails.getUsername())
+                        .setIssuedAt(new Date(System.currentTimeMillis()))
+                        .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                        .signWith(getKey(), SignatureAlgorithm.HS256)
+                        .compact();
+        }
+
+        // Method to extract specific claim (like first name, email, etc.) from token
+        public String extractClaimByName(String token, String claimName) {
+                try {
+                        return extractClaim(token, claims -> claims.get(claimName, String.class));
+                } catch (Exception e) {
+                        logger.warning("Error extracting claim (" + claimName + ") from token: " + e.getMessage());
+                        return null;
+                }
+        }
+
+        // Method to generate a refreshed token with new expiration
+        public String refreshToken(String token) {
+                try {
+                        String username = extractUsername(token);
+                        List<String> roles = extractRoles(token);
+                        Date now = new Date(System.currentTimeMillis());
+
+                        Map<String, Object> claims = new HashMap<>();
+                        claims.put("roles", roles);
+
+                        return Jwts.builder()
+                                .setClaims(claims)
+                                .setSubject(username)
+                                .setIssuedAt(now)
+                                .setExpiration(new Date(now.getTime() + expirationTime))
+                                .signWith(getKey(), SignatureAlgorithm.HS256)
+                                .compact();
+                } catch (Exception e) {
+                        logger.warning("Error refreshing token: " + e.getMessage());
+                        return null;
+                }
         }
 }
