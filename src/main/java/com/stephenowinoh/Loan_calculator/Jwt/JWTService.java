@@ -7,12 +7,14 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
@@ -53,6 +55,7 @@ public class JWTService {
         // Extract roles from token
         public List<String> extractRoles(String token) {
                 try {
+                        // Extract roles as a List from claims
                         return extractClaim(token, claims -> claims.get("roles", List.class));
                 } catch (Exception e) {
                         logger.warning("Error extracting roles from token: " + e.getMessage());
@@ -122,8 +125,13 @@ public class JWTService {
 
         // Generate token for userDetails only (for simple user cases)
         public String generateTokenForUserDetails(UserDetails userDetails) {
+                // Extract roles from user details
+                List<String> roles = userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList());
+
                 Map<String, Object> claims = new HashMap<>();
-                claims.put("roles", userDetails.getAuthorities());  // Store roles directly as authorities
+                claims.put("roles", roles);  // Store roles directly as authorities
 
                 return Jwts.builder()
                         .setClaims(claims)
@@ -167,3 +175,4 @@ public class JWTService {
                 }
         }
 }
+
