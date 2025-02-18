@@ -36,17 +36,24 @@ public class CustomerController {
                 this.jwtService = jwtService;
         }
 
-        // Register customer and assign roles (USER/ADMIN)
         @PostMapping("/register")
         public ResponseEntity<CustomerResponseDto> registerCustomer(@Valid @RequestBody CustomerDto customerDto) {
-                Optional<Customer> existingCustomer = customerService.findByUsername(customerDto.getUsername());
-                if (existingCustomer.isPresent()) {
-                        throw new BadRequestException("Username already exists");
+                // Check if email already exists
+                Optional<Customer> existingCustomerByEmail = customerService.findByEmail(customerDto.getEmail());
+                if (existingCustomerByEmail.isPresent()) {
+                        throw new BadRequestException("Email is already in use");
+                }
+
+                // Check if username already exists
+                Optional<Customer> existingCustomerByUsername = customerService.findByUsername(customerDto.getUsername());
+                if (existingCustomerByUsername.isPresent()) {
+                        throw new BadRequestException("Username is already taken");
                 }
 
                 CustomerResponseDto responseDto = customerService.registerCustomer(customerDto);
                 return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
         }
+
 
         @PostMapping("/authenticate")
         public ResponseEntity<String> authenticateAndGetToken(@RequestBody LoginRequest loginRequest) {

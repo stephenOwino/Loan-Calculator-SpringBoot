@@ -14,4 +14,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
         // Custom query method to find a customer by email
         Optional<Customer> findByEmail(String email);
+
 }

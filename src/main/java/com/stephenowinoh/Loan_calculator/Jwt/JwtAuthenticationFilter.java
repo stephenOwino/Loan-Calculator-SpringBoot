@@ -37,34 +37,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Extract the Authorization header
                 String authHeader = request.getHeader("Authorization");
 
-                // Check if the Authorization header is missing or doesn't start with "Bearer"
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                         logger.warning("Missing or invalid Authorization header");
-                        // Respond with Unauthorized (401)
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("Unauthorized access");
-                        return; // Stop processing further filters
+                        return;
                 }
 
-                // Extract the JWT token from the Authorization header
-                String token = authHeader.substring(7); // Remove "Bearer " prefix
+                String token = authHeader.substring(7);
 
                 try {
                         String username = jwtService.extractUserName(token);
-
-                        // Check if username is valid and if the user is not already authenticated
                         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                                 UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
-
-                                // Validate the JWT token
                                 if (jwtService.validateToken(token, userDetails)) {
-                                        // Extract roles from the JWT and set the authentication context
                                         List<String> roles = jwtService.extractRoles(token);
                                         var authorities = roles.stream()
                                                 .map(SimpleGrantedAuthority::new)
                                                 .collect(Collectors.toList());
 
-                                        // Create an Authentication token and set it to the SecurityContext
                                         UsernamePasswordAuthenticationToken authToken =
                                                 new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -72,11 +63,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                                         logger.info("Authenticated user: " + username + " with roles: " + roles);
                                 } else {
-                                        // If the token is invalid, return an Unauthorized response
                                         logger.warning("Invalid JWT token for user: " + username);
                                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                         response.getWriter().write("Invalid or expired JWT token");
-                                        return; // Stop further processing as token is invalid
+                                        return;
                                 }
                         }
                 } catch (Exception e) {
@@ -86,7 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         return;
                 }
 
-                // Continue the filter chain if everything is fine
                 filterChain.doFilter(request, response);
         }
 }

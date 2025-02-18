@@ -51,10 +51,11 @@ public class SecurityConfiguration {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
                 return config.getAuthenticationManager();
         }
+
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(AbstractHttpConfigurer::disable)
-                        .cors(Customizer.withDefaults())  // Spring will handle CORS
+                        .cors(Customizer.withDefaults())
                         .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/api/customers/register/**", "/api/customers/authenticate").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
@@ -69,5 +70,4 @@ public class SecurityConfiguration {
 
                 return http.build();
         }
-
 }

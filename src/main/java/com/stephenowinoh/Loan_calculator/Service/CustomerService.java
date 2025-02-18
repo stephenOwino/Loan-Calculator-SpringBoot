@@ -34,10 +34,22 @@ public class CustomerService implements ICustomerService {
         }
 
         @Override
+        public Optional<Customer> findByEmail(String email) {
+                return customerRepository.findByEmail(email);  // Add this method to check by email
+        }
+
+        @Override
         public CustomerResponseDto registerCustomer(CustomerDto customerDto) {
-                Optional<Customer> existingCustomer = customerRepository.findByUsername(customerDto.getUsername());
-                if (existingCustomer.isPresent()) {
+                // Check if username already exists
+                Optional<Customer> existingCustomerByUsername = customerRepository.findByUsername(customerDto.getUsername());
+                if (existingCustomerByUsername.isPresent()) {
                         throw new RuntimeException("Username is already taken!");
+                }
+
+                // Check if email already exists
+                Optional<Customer> existingCustomerByEmail = customerRepository.findByEmail(customerDto.getEmail());
+                if (existingCustomerByEmail.isPresent()) {
+                        throw new RuntimeException("Email is already in use!");
                 }
 
                 // Set default role to CUSTOMER if not provided
@@ -46,6 +58,7 @@ public class CustomerService implements ICustomerService {
                 Customer customer = CustomerMapper.toEntity(customerDto);
                 customer.setPassword(passwordEncoder.encode(customerDto.getPassword())); // Encrypt password
                 customer.setRole(role); // Set role
+                customer.setEmail(customerDto.getEmail()); // Set email
                 Customer savedCustomer = customerRepository.save(customer);
 
                 return CustomerMapper.toDto(savedCustomer);

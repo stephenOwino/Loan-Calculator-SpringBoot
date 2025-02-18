@@ -31,4 +31,6 @@ public interface ICustomerService {
         UserDetails loadUserByUsername(String username);
 
         boolean verifyCustomerName(String fullName, String username);
+
+        Optional<Customer> findByEmail(String email);
 }
